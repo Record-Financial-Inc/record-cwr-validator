@@ -26,6 +26,7 @@ import { duplicateWorkRule } from './rules/duplicate-work';
 import { partyIdentityRule } from './rules/party-identity';
 import { senderRegisterRule } from './rules/sender-register';
 import { envelopeConstantRule } from './rules/envelope-constants';
+import { publisherChainRule } from './rules/publisher-chain';
 import type { CwrRule, FileRule, TxRule } from './context';
 
 export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule, envelopeConstantRule];
@@ -51,5 +52,6 @@ export const TX_RULE_LIST: TxRule[] = [
   writerTerritoryRequiredRule,
   territoryOverlapRule,
   mandatoryFieldRule,
+  publisherChainRule,
 ];
 export const ALL_RULES: CwrRule[] = [...FILE_RULE_LIST, ...TX_RULE_LIST];

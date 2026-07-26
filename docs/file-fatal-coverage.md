@@ -58,3 +58,58 @@ explicitly inert. No gap affects a file this engine writes.
 A rule's severity is the specification's, not a judgement. Where this engine reports an ER or GR rule
 it does so as an `error`, which blocks. Where it cannot evaluate one it says so rather than staying
 silent, because silence and a pass are indistinguishable to a caller.
+
+---
+
+# Publisher record coverage — §5.4 SPU/OPU
+
+39 rules, verified rule by rule.
+
+## Covered — 30 of 39
+
+| Rule | Sev | Requirement | Enforced by |
+|---|---|---|---|
+| Rec 2 | TR | A chain is headed by an Original Publisher or Income Participant | `PUBLISHER_CHAIN_ROLE` |
+| Rec 3 | TR | SE / AM / PA / ES hold no ownership | `PUBLISHER_CHAIN_ROLE` |
+| Rec 5 | TR | Administrators and sub-publishers take the chain's sequence number | `PWR_SEQ_MISMATCH`, `RECORD_ORDER` |
+| Rec 8 | TR | An Acquirer holds more than zero in some right | `PUBLISHER_CHAIN_ROLE` |
+| FV1 | TR | Publisher Sequence # entered; chains numbered from 1 upward | `MANDATORY_FIELD`, `RECORD_ORDER` |
+| FV2 | TR | SPU carries an Interested Party # | `MANDATORY_FIELD` |
+| FV3 | TR | An Interested Party # is unique per party | `PARTY_IP_BIJECTION` |
+| FV4 | TR | Publisher Name entered | `MANDATORY_FIELD` |
+| FV5 | TR | Publisher Type entered on an SPU | `MANDATORY_FIELD` |
+| FV6 | TR | Publisher Type matches the Publisher Type table | `PUBLISHER_ROLE` |
+| FV8 | FR | OPU Publisher Unknown Indicator is Y or N | `LOOKUP_CODE` |
+| FV12 / 15 / 17 | FR | PR / MR / SR Affiliation Society # match the Society Code table | `LOOKUP_CODE` |
+| FV13 | TR | PR Ownership Share is numeric, 0 to 50.00% | `FIELD_FORMAT` |
+| FV16 / 18 | TR | MR / SR Ownership Share numeric, 0 to 100.00% | `FIELD_FORMAT` |
+| FV19 | TR | Only "E" and "AQ" hold ownership | `PUBLISHER_CHAIN_ROLE` |
+| FV20 | FR | Special Agreement Indicator matches its table | `LOOKUP_CODE` |
+| FV21 | FR | First Recording Refusal Indicator is Y or N | `LOOKUP_CODE` |
+| FV23 | FR | Tax ID numeric | `FIELD_FORMAT` |
+| FV30 | FR | Agreement Type matches its table | `LOOKUP_CODE` |
+| FV31 | FR | USA License Indicator matches its table | `LOOKUP_CODE` |
+| FV32 | TR | An "AQ" follows an "E" | `PUBLISHER_CHAIN_ROLE` |
+| FV10 / 24 | FR | Publisher IPI Name # and Base Number are well formed | `IPI_FORMAT`, `CHECK_DIGIT` * |
+
+\* Format and check digit only. Confirming an IPI exists needs the IPI database, which is not
+distributed; a wrong-but-well-formed number still passes, which is why a clean report means
+well-formed rather than verified correct.
+
+## Not covered — 9 of 39
+
+| Rule | Sev | Requirement | Why not |
+|---|---|---|---|
+| Rec 4 | TR | An "AM" must have the right to administer for the preceding publisher | Not derivable from the file. It asserts a fact about an agreement, which lives in the AGR transaction or the society's records. |
+| FV7 | TR | SPU Publisher Unknown Indicator must be blank | Cheap to add; no file yet observed setting it on an SPU. |
+| FV9 | FR | An OPU with Unknown Indicator "Y" has a blank Publisher Name | Conditional cross-field rule; only fires on third-party files. |
+| FV11 / 25 / 26 | FR | Agreement numbers must match an agreement on file | Requires the society's agreement register. |
+| FV27 | FR | OPU Special Agreements Indicator is "L" or blank | Cheap to add. |
+| FV28 | FR | An OPU with an invalid publisher type defaults to "E" | A defaulting instruction to the recipient, not a rejection. |
+| FV29 | TR | A publisher named like a society must carry a valid IPI | Needs society-name matching against the Society Code table. |
+| FV37 | TR | Publisher Name uses only the CIS "Names" character set | The CIS character set table is not distributed. |
+| FV40 | TR | A collecting SPU carries an IPI Name Number | Cheap to add; needs the collecting publisher identified from its SPT. |
+
+Four of the nine need reference data we cannot ship (the IPI database, the agreement register, the
+CIS character set). One is a defaulting instruction rather than a check. Four are implementable and
+are the next increment.
