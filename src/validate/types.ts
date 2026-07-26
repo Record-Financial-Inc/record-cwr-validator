@@ -34,6 +34,14 @@ export interface CwrIssue {
   /** The work (transaction) this issue belongs to; `null` for file/group-scoped issues (invariant I2). */
   txSeq?: number | null;
   workTitle?: string;
+  /**
+   * How many records carry this same finding, when identical findings have been collapsed into one.
+   * Absent means one. `records` then holds the first few line numbers rather than all of them, and
+   * `truncatedRecords` says so.
+   */
+  occurrences?: number;
+  /** True when `records` lists only the first of `occurrences` lines. */
+  truncatedRecords?: boolean;
 }
 
 export interface CwrValidationResult {

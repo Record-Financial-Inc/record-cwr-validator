@@ -36,9 +36,46 @@ export function validateCwr(content: string): CwrValidationResult {
     for (const rule of TX_RULE_LIST) all.push(...rule.run(ctx));
   }
 
-  const errors = all.filter((i) => i.severity === 'error');
-  const warnings = all.filter((i) => i.severity === 'warning');
+  const errors = collapse(all.filter((i) => i.severity === 'error'));
+  const warnings = collapse(all.filter((i) => i.severity === 'warning'));
   return { ok: errors.length === 0, errors, warnings, recordCount: records.length, transactionCount };
+}
+
+/** Line numbers kept on a collapsed finding before the rest are counted rather than listed. */
+const LINES_PER_FINDING = 20;
+
+/**
+ * Collapse findings whose message is identical into one carrying an occurrence count.
+ *
+ * One defect commonly repeats verbatim across every record of a type, and a reader gains nothing
+ * from the same sentence a thousand times. Collapsing states it once with a count.
+ *
+ * This is a smaller win than it sounds, and worth being accurate about: most findings embed the
+ * record's own value, so they are genuinely distinct sentences and do not collapse. It shrinks the
+ * structural and framing findings, which do repeat exactly, and leaves the rest. The report for a
+ * badly broken file stays large because it genuinely contains that many distinct findings.
+ *
+ * The count is always stated, and `truncatedRecords` marks a line list that is partial, because a
+ * shortened list that reads as complete is worse than no list.
+ */
+function collapse(issues: CwrIssue[]): CwrIssue[] {
+  const out: CwrIssue[] = [];
+  const byMessage = new Map<string, CwrIssue>();
+  for (const issue of issues) {
+    // Keyed on message AND work, so a defect in one work is never merged into another's report.
+    const key = `${issue.txSeq ?? 'file'}\u0000${issue.message}`;
+    const seen = byMessage.get(key);
+    if (!seen) {
+      const entry = { ...issue };
+      byMessage.set(key, entry);
+      out.push(entry);
+      continue;
+    }
+    seen.occurrences = (seen.occurrences ?? 1) + 1;
+    if (seen.records.length < LINES_PER_FINDING) seen.records.push(...issue.records);
+    else seen.truncatedRecords = true;
+  }
+  return out;
 }
 
 /** Group records by transaction (NWR sequence) in file order, binding each work's title. */
