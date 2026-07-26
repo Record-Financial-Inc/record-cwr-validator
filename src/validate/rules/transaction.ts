@@ -1,4 +1,4 @@
-// Layer 3 — transaction (per-work) rules. Issues auto-carry this work's txSeq (invariant I2).
+// Layer 3: transaction (per-work) rules. Issues auto-carry this work's txSeq (invariant I2).
 
 import type { PublisherRecord } from '../../parse/parse-cwr';
 import type { CwrIssue } from '../types';
@@ -29,9 +29,9 @@ export const ownershipTotalRule: TxRule = {
     for (const right of RIGHTS) {
       const sum = parties.reduce((s, r) => s + r.ownership[right], 0);
       if (sum > 1 + TOLERANCE) {
-        out.push(ctx.issue('error', 'overclaim', `${RIGHT_LABEL[right]} ownership totals ${(sum * 100).toFixed(2)}% — over 100%, so two parties claim the same slice (CWR19-1070 §4.2 p26 edit 11, tolerance ±0.06%).`, lines));
+        out.push(ctx.issue('error', 'overclaim', `${RIGHT_LABEL[right]} ownership totals ${(sum * 100).toFixed(2)}%: over 100%, so two parties claim the same slice (CWR19-1070 §4.2 p26 edit 11, tolerance ±0.06%).`, lines));
       } else if (sum > TOLERANCE && sum < 1 - TOLERANCE) {
-        out.push(ctx.issue('error', 'overclaim', `${RIGHT_LABEL[right]} ownership totals ${(sum * 100).toFixed(2)}% — under 100%, so a co-writer or publisher is missing (CWR19-1070 §4.2 p26 edit 11, tolerance ±0.06%).`, lines));
+        out.push(ctx.issue('error', 'overclaim', `${RIGHT_LABEL[right]} ownership totals ${(sum * 100).toFixed(2)}%: under 100%, so a co-writer or publisher is missing (CWR19-1070 §4.2 p26 edit 11, tolerance ±0.06%).`, lines));
       }
     }
     return out;
@@ -74,13 +74,13 @@ export const collectionTerritoryRule: TxRule = {
     for (const [key, entry] of totals) {
       if (entry.sum <= 1 + TOLERANCE) continue;
       const [tis, right] = key.split(':') as [string, (typeof RIGHTS)[number]];
-      out.push(ctx.issue('error', 'territory', `${RIGHT_LABEL[right]} collection in territory ${tis} totals ${(entry.sum * 100).toFixed(1)}% — exceeds 100% (overlapping/over-claimed territory).`, entry.lines));
+      out.push(ctx.issue('error', 'territory', `${RIGHT_LABEL[right]} collection in territory ${tis} totals ${(entry.sum * 100).toFixed(1)}%: exceeds 100% (overlapping/over-claimed territory).`, entry.lines));
     }
     return out;
   },
 };
 
-/** The same IPI must not appear twice within ONE chain (publisher sequence #) — the self-admin
+/** The same IPI must not appear twice within ONE chain (publisher sequence #): the self-admin
  *  E+AM duplicate a society rejected. Distinct IPIs in a chain, or the same IPI across chains, are fine. */
 export const duplicatePublisherRule: TxRule = {
   id: 'DUPLICATE_PUBLISHER',
@@ -101,7 +101,7 @@ export const duplicatePublisherRule: TxRule = {
       const key = `${p.publisherSeq}|${norm}`;
       const prev = seen.get(key);
       if (prev) {
-        out.push(ctx.issue('error', 'duplicate', `Duplicate publisher — "${p.name || p.ipi}" (IPI ${p.ipi}) appears twice in chain ${p.publisherSeq}.`, [prev.line, p.line]));
+        out.push(ctx.issue('error', 'duplicate', `Duplicate publisher: "${p.name || p.ipi}" (IPI ${p.ipi}) appears twice in chain ${p.publisherSeq}.`, [prev.line, p.line]));
       } else {
         seen.set(key, p);
       }

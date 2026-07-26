@@ -1,8 +1,8 @@
-// Layer 4 — submitter identity against the CWR Sender ID and Codes Table.
+// Layer 4: submitter identity against the CWR Sender ID and Codes Table.
 //
 // CWR19-1070 §3.5 p14, HDR field validations 2, 3, 5 and 12, all at ER (entire file rejected).
 // These are evaluated at the header, before a single transaction is read, so a file that fails them
-// produces no acknowledgement and no rejection report — it simply cannot be ingested.
+// produces no acknowledgement and no rejection report: it simply cannot be ingested.
 //
 //   FV2  Sender Type must be PB, SO, WR or AA, "except where sender needs to use the Sender Type
 //        field to supply the leading 2 numbers of their IPNN".
@@ -67,9 +67,9 @@ export const senderRegisterRule: FileRule = {
     const senderId = hdr.senderId.trim();
     const isIpnnPrefix = /^\d{2}$/.test(senderType);
 
-    // FV2 — the type is one of the four codes, or the leading two digits of an IPI Name Number.
+    // FV2: the type is one of the four codes, or the leading two digits of an IPI Name Number.
     if (!SENDER_TYPES.has(senderType) && !isIpnnPrefix) {
-      out.push(ctx.issue('error', 'header', `Sender Type "${senderType}" is not PB, SO, WR or AA, and is not the leading two digits of an IPI Name Number (CWR19-1070 §3.5 p14 field validation 2, ER — entire file rejected).`, [hdr.line]));
+      out.push(ctx.issue('error', 'header', `Sender Type "${senderType}" is not PB, SO, WR or AA, and is not the leading two digits of an IPI Name Number (CWR19-1070 §3.5 p14 field validation 2, ER: entire file rejected).`, [hdr.line]));
       return out;
     }
 
@@ -81,20 +81,26 @@ export const senderRegisterRule: FileRule = {
     const claimed = isIpnnPrefix ? `${senderType}${senderId}` : senderId;
 
     if (!register) {
-      out.push(ctx.issue('warning', 'header', `Sender identity "${claimed}" could not be verified: the CWR Sender ID and Codes Table (CWR06-1972) was not supplied. §3.5 p14 field validations 3 and 12 require it to match a registered entry, at ER severity — a file failing them is rejected in full at the header, before any transaction is read.`, [hdr.line]));
+      // `unverified` so the surface can say the check did not run, rather than folding it in with
+      // defects we actually found: or, worse, letting a file pass as fully conformant when the
+      // one rule that silently sinks files at the header was never evaluated.
+      out.push({
+        ...ctx.issue('warning', 'header', `Sender identity "${claimed}" could not be verified: the CWR Sender ID and Codes Table (CWR06-1972) was not supplied. §3.5 p14 field validations 3 and 12 require it to match a registered entry, at ER severity: a file failing them is rejected in full at the header, before any transaction is read.`, [hdr.line]),
+        unverified: true,
+      });
       return out;
     }
 
     const match = register.entries.find((e) => digits(e.ipi) === digits(claimed));
     if (!match) {
-      out.push(ctx.issue('error', 'header', `Sender identity "${claimed}" is not in the CWR Sender ID and Codes Table, so it is not an approved CWR participant (CWR19-1070 §3.5 p14 field validations 3 and 12, ER — entire file rejected before any transaction is read).`, [hdr.line]));
+      out.push(ctx.issue('error', 'header', `Sender identity "${claimed}" is not in the CWR Sender ID and Codes Table, so it is not an approved CWR participant (CWR19-1070 §3.5 p14 field validations 3 and 12, ER: entire file rejected before any transaction is read).`, [hdr.line]));
       return out;
     }
 
-    // FV5 — for a publisher sender the name must match the registered one.
+    // FV5: for a publisher sender the name must match the registered one.
     const norm = (v: string) => v.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (norm(hdr.senderName) !== norm(match.name)) {
-      out.push(ctx.issue('error', 'header', `Sender Name "${hdr.senderName.trim()}" does not match "${match.name}", the name registered against this sender (CWR19-1070 §3.5 p14 field validation 5, ER — entire file rejected).`, [hdr.line]));
+      out.push(ctx.issue('error', 'header', `Sender Name "${hdr.senderName.trim()}" does not match "${match.name}", the name registered against this sender (CWR19-1070 §3.5 p14 field validation 5, ER: entire file rejected).`, [hdr.line]));
     }
 
     return out;

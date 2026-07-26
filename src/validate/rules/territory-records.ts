@@ -1,4 +1,4 @@
-// Layer 3 — territory record consistency (CWR19-1070 §5.7 SPT/OPT p44-45, §5.12 SWT/OWT p50).
+// Layer 3: territory record consistency (CWR19-1070 §5.7 SPT/OPT p44-45, §5.12 SWT/OWT p50).
 //
 //   SPT rec 1 (TR, p44) An included territory must carry a collection share above zero.
 //   SWT rec 1 (TR, p50) The same, for writer territories.
@@ -83,7 +83,7 @@ export const territoryRecordRule: TxRule = {
         }
         for (const [tis, parties] of byTis) {
           if (parties.size < 2) continue;
-          out.push(ctx.issue('error', 'territory', `Territory ${tis} is claimed for the ${RIGHT_LABEL[right]} right by ${parties.size} different ${label}. A territory links to one party per right (CWR19-1070 ${section}, TR — transaction rejected).`, [...parties.values()].map((t) => t.line).slice(0, 6)));
+          out.push(ctx.issue('error', 'territory', `Territory ${tis} is claimed for the ${RIGHT_LABEL[right]} right by ${parties.size} different ${label}. A territory links to one party per right (CWR19-1070 ${section}, TR: transaction rejected).`, [...parties.values()].map((t) => t.line).slice(0, 6)));
         }
       }
     }

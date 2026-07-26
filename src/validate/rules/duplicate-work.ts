@@ -1,4 +1,4 @@
-// Layer 4 — the submitter work number must be unique across the whole transmission. CISAC keys a
+// Layer 4: the submitter work number must be unique across the whole transmission. CISAC keys a
 // registration on the submitter work #, so the same value on two NWR/REV transactions is an ambiguous
 // double-registration a society rejects. The per-transaction rules can't see this; a file rule can.
 // Governing rule: CWR19-1070 §4.2 p25 transaction rule 13 (TR).

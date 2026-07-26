@@ -1,4 +1,4 @@
-// The rule registry — the coverage ledger. Every rule is listed here with its layer/category/phase
+// The rule registry: the coverage ledger. Every rule is listed here with its layer/category/phase
 // metadata; as phases land, new rules register behind their phase. The orchestrator runs FILE_RULES
 // (Layer 4) then, per transaction, TX_RULES (Layer 3). The per-rule test matrix is generated from
 // these arrays.
@@ -33,6 +33,7 @@ import { territoryRecordRule } from './rules/territory-records';
 import { recordPrefixRule } from './rules/record-prefix';
 import { recordingIdentifierRule } from './rules/recording-identifiers';
 import { characterSetRule } from './rules/character-set';
+import { partyConsistencyRule } from './rules/party-consistency';
 import type { CwrRule, FileRule, TxRule } from './context';
 
 export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule, envelopeConstantRule, recordPrefixRule];
@@ -64,5 +65,6 @@ export const TX_RULE_LIST: TxRule[] = [
   territoryRecordRule,
   recordingIdentifierRule,
   characterSetRule,
+  partyConsistencyRule,
 ];
 export const ALL_RULES: CwrRule[] = [...FILE_RULE_LIST, ...TX_RULE_LIST];

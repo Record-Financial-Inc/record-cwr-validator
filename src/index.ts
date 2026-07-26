@@ -22,13 +22,26 @@ export type {
 } from './parse/parse-cwr';
 
 export { validateCwr } from './validate/validate-cwr';
-export { CWR_ISSUE_CATEGORIES } from './validate/types';
+export { CWR_ISSUE_CATEGORIES, issueCount } from './validate/types';
 export type {
   CwrIssue,
   CwrIssueCategory,
   CwrSeverity,
   CwrValidationResult,
 } from './validate/types';
+
+/**
+ * Presenting the findings.
+ *
+ * `issueCount` is the count to show a person: identical findings arrive merged into one entry
+ * carrying `occurrences`, so counting entries understates a real file. `groupByRule` gathers
+ * findings that differ only in the value they name, which is most of them: without it, one rule
+ * broken ten times reads as ten paragraphs. `formatCwrReport` renders the lot as text.
+ */
+export { groupByRule, CWR_REPORT_ORDER } from './validate/group-by-rule';
+export type { RuleGroup, RuleInstance } from './validate/group-by-rule';
+export { formatCwrReport, CWR_CATEGORY_LABEL, CWR_CATEGORY_FIX } from './validate/format-report';
+export type { CwrReportMeta } from './validate/format-report';
 
 export { ALL_RULES, FILE_RULE_LIST, TX_RULE_LIST } from './validate/registry';
 

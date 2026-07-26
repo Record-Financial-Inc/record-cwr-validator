@@ -1,4 +1,4 @@
-// Layer 3 — CWR 2.2 BNF record order within a transaction:
+// Layer 3: CWR 2.2 BNF record order within a transaction:
 //   NWR → [SPU/SPT/OPU/OPT]* → [SWR/SWT/PWR/OWR/OWT]* → [ALT]* → [REC/…]
 // We assign each record a block rank and require ranks to be non-decreasing through the work. This
 // catches gross misordering (e.g. a writer record before the publishers, or REC before the writers)
@@ -36,7 +36,7 @@ export const recordOrderRule: TxRule = {
     for (const r of ctx.records) {
       const rank = rankOf(r);
       if (rank < prevRank && prev) {
-        out.push(ctx.issue('error', 'ordering', `Record ${r.type} is out of CWR order — it appears after ${prev.type}.`, [r.line]));
+        out.push(ctx.issue('error', 'ordering', `Record ${r.type} is out of CWR order: it appears after ${prev.type}.`, [r.line]));
       }
 
       if (isPubTerr(r) && r.ip && !seenPublisherIps.has(r.ip)) {

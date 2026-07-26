@@ -9,9 +9,15 @@ citation is per-field. Severities are the specification's own: **ER** entire fil
 group rejected, **TR** transaction rejected, **RR** record rejected, **FR** field rejected.
 
 ```ts
-import { parseCwr, validateCwr } from 'record-cwr-validator';
+import { readFileSync } from 'node:fs';
+import { validateCwr } from 'record-cwr-validator';
 
-const report = validateCwr(fileContents);
+// Read as latin1, NOT utf8. CWR is a byte-oriented fixed-width format: every field sits at a byte
+// offset from the start of its record. A UTF-8 decode collapses each multi-byte sequence into one
+// character, and every field after it in that record is then read one byte early. Nothing reports
+// an error, because the specification permits a record to be right-trimmed of its optional tail
+// fields, so a short line is legal. The corruption is silent: you get wrong values, not a failure.
+const report = validateCwr(readFileSync(path, 'latin1'));
 
 if (!report.ok) {
   for (const issue of report.errors) {
@@ -23,14 +29,62 @@ if (!report.ok) {
 ```
 [header] L1: Sender identity "01234567846" is not in the CWR Sender ID and Codes Table, so it is
              not an approved CWR participant (CWR19-1070 §3.5 p14 field validations 3 and 12,
-             ER — entire file rejected before any transaction is read).
+             ER: entire file rejected before any transaction is read).
 ```
+
+## Presenting the findings
+
+The loop above is fine for a handful of findings and unreadable past that, for two reasons worth
+knowing before you build a report of your own.
+
+**Count with `issueCount`, not `.length`.** Findings identical within a work arrive merged into one
+entry carrying `occurrences`. `errors.length` is the number of entries, which is not the number of
+findings: on one real submission it read 447 where there were 708.
+
+**Group with `groupByRule`.** Most findings embed the offending value (`EAN "00031520" is not...`),
+so no two are identical and nothing collapses. Printed one per line, a single rule broken ten times
+becomes ten near-identical paragraphs, and the values, the only part you can act on, are buried
+mid-sentence. `groupByRule` gathers findings that differ only in the value they name, masks the
+value out of the rule, and lifts the specification citation out so it is stated once.
+
+```ts
+import { issueCount, groupByRule, formatCwrReport } from 'record-cwr-validator';
+
+console.log(`${issueCount(report.errors)} issues, ${issueCount(report.warnings)} warnings`);
+
+for (const group of groupByRule(report.errors)) {
+  console.log(`${group.rule}  ×${group.total}`);
+  if (group.citation) console.log(`  ${group.citation}`);
+  for (const { values, issue, count } of group.instances) {
+    console.log(`  ${values.join(' ')}  ${issue.workTitle ?? ''}  ×${count}  L${issue.records.join(', L')}`);
+  }
+}
+```
+
+`formatCwrReport(report, { source: filename })` renders the whole thing as text, complete and
+untruncated, if you would rather not build one:
+
+```
+FIELD FORMATS (152)
+------------------------------------------------------------------------------
+  A field's format is invalid, such as an IPI Name Number that is not 9 to 11 digits.
+
+  [WARN ] EAN "…" is not a valid European Article Number: it must be thirteen
+          digits ending in a correct check digit.  ×152
+          CWR19-1070 §5.21 p60 field validation 9, FR: the field is rejected
+          "0000000000123"  A WORK TITLE  ×8  L10
+```
+
+**A pass is a pass over the checks that ran.** A finding carrying `unverified: true` is a check that
+could not run because its reference data was not supplied, not a defect found in the file. See
+*What it does not do* below. Say so in your own verdict: an unverifiable ER-severity check is not a
+pass.
 
 ## Why this exists
 
 CWR files are fixed-width and unforgiving, and societies differ in what they tell you when one
 fails. A file can be refused with no acknowledgement and no rejection report, because a header-level
-**ER** rule is evaluated before any transaction is read — so there is nothing to report on. Working
+**ER** rule is evaluated before any transaction is read: so there is nothing to report on. Working
 out which rule you broke, from silence, is expensive.
 
 This library exists to turn that silence into a citation.
@@ -73,6 +127,25 @@ clean report means well-formed and submittable. It does not mean verified correc
 ABRAMUS/UBC, GEMA, Harry Fox, ICE, MusicMark, SACEM, SESAC, SGAE, SIAE and others. This library
 implements the universal rules; the society-specific ones are opt-in and incomplete.
 
+**Reference data is deliberately not integrated.** Several rules ask whether a value exists in a
+register the file does not contain: whether an IPI Name Number is really assigned to that party,
+whether an agreement number matches one on file with the acquiring society, whether a work has been
+registered before. Thirteen rules need such data and three ask about submission history.
+
+Public sources exist for some of it. The CWR Sender ID and Codes Table is downloadable from the
+[CWR-DataApi project](https://cwr-dataapi.readthedocs.io/en/latest/cwr_standard/documents.html), and
+free IPI lookup services are available. This package integrates none of them, on purpose: a
+validator that reaches the network is a validator whose answer depends on someone else's uptime,
+rate limit and data quality, and a third-party aggregate is not the authoritative register the rule
+names. Supply your own data through the hooks and the checks run; supply nothing and they report as
+unverifiable.
+
+One rule family is approximated rather than skipped. Eleven rules require names and titles to use
+the CIS character set, whose table is not published: CWR11-1494, which some indexes list as the
+character set rules, is in fact the CWR User Manual, and states the list was still being compiled.
+Printable ASCII is a strict superset, so the check flags what is certainly invalid and says what it
+cannot see.
+
 **The sender register is not included.** §3.5 p14 field validations 3, 5 and 12 require the Sender
 ID to match the CWR Sender ID and Codes Table (CWR06-1972), which is a CISAC members-only document
 we cannot redistribute. Supply it yourself:
@@ -90,7 +163,7 @@ ER-severity rule that could not run is not a pass.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT: see [LICENSE](LICENSE).
 
 Two data files are vendored from MIT-licensed sources and keep their original terms, recorded in
 [THIRD-PARTY-LICENSES](THIRD-PARTY-LICENSES):

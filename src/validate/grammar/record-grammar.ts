@@ -1,13 +1,13 @@
-// The CWR field-requirements matrix — the single source of truth for field byte-positions, datatypes,
+// The CWR field-requirements matrix: the single source of truth for field byte-positions, datatypes,
 // presence (M/C/O) and lookup-table bindings, one entry per record type.
 //
 // Provenance: field order + sizes follow the CISAC CWR 2.2 record layout. For the records we GENERATE
 // (HDR/GRH/NWR/ALT/SPU/SPT/SWR/SWT/PWR/REC/GRT/TRL and their O* twins) the widths are transcribed from
-// core/generators/cwr/record-builders.ts — the authoritative byte-layout of the files we actually send
-// to a society — and proven byte-identical by tests/integration/cwr-grammar.test.ts (generate → extract →
+// core/generators/cwr/record-builders.ts: the authoritative byte-layout of the files we actually send
+// to a society: and proven byte-identical by tests/integration/cwr-grammar.test.ts (generate → extract →
 // equals input). They were cross-checked against the MIT weso/CWR-DataApi config; the one systematic
 // divergence is duration fields, which CWR 2.2 specifies as 6 chars (HHMMSS) where that 2.1-era config
-// used 8 — our generator (and this matrix) follow the 2.2 width. The remaining ~20 record types we do
+// used 8: our generator (and this matrix) follow the 2.2 width. The remaining ~20 record types we do
 // not generate (AGR/TER/IPA/NPA/…) are added from that config in P10, where the parser exercises them.
 //
 // `source` on a field names its lookup table (P7 wires these to the vendored code lists). `lookup_int`

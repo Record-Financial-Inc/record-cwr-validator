@@ -1,4 +1,4 @@
-// Layer 4 — interested-party identity.
+// Layer 4: interested-party identity.
 //
 // CWR19-1070 §5.4 p40, Field Level Validation 3 (TR):
 //   "Submitters must ensure that the Interested Party # is unique within their system for both
@@ -14,7 +14,7 @@
 // A party emitted under two IP #s in two chains satisfies both and still breaks §5.4 FV3. That is
 // the shape a real submission carried: IPI 01234567846 as IP # 000000001 and 000000002 in one work.
 //
-// The spec does NOT forbid a party appearing in more than one chain — §5.4 FV1 simply numbers
+// The spec does NOT forbid a party appearing in more than one chain: §5.4 FV1 simply numbers
 // chains 1, 2, 3… What it forbids is that party carrying two identities.
 
 import type { PublisherRecord, WriterRecord } from '../../parse/parse-cwr';
@@ -64,7 +64,7 @@ export const partyIdentityRule: FileRule = {
       out.push(ctx.issue(
         'error',
         'duplicate',
-        `"${label(all[0])}" (IPI ${ipi}) is filed under ${byIp.size} different Interested Party numbers (${ips.join(', ')}). One party must carry one Interested Party # (CWR19-1070 §5.4 p40 field validation 3, TR — transaction rejected).`,
+        `"${label(all[0])}" (IPI ${ipi}) is filed under ${byIp.size} different Interested Party numbers (${ips.join(', ')}). One party must carry one Interested Party # (CWR19-1070 §5.4 p40 field validation 3, TR: transaction rejected).`,
         all.map((p) => p.line).slice(0, 8),
       ));
     }
@@ -75,7 +75,7 @@ export const partyIdentityRule: FileRule = {
       out.push(ctx.issue(
         'error',
         'duplicate',
-        `Interested Party # ${ip} identifies ${byIpi.size} different parties (IPI ${[...byIpi.keys()].join(', ')}). An Interested Party # must identify exactly one party (CWR19-1070 §5.4 p40 field validation 3, TR — transaction rejected).`,
+        `Interested Party # ${ip} identifies ${byIpi.size} different parties (IPI ${[...byIpi.keys()].join(', ')}). An Interested Party # must identify exactly one party (CWR19-1070 §5.4 p40 field validation 3, TR: transaction rejected).`,
         all.map((p) => p.line).slice(0, 8),
       ));
     }

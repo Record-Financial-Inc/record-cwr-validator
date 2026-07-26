@@ -1,7 +1,7 @@
 // Field definitions for CWR record types we VALIDATE but do not generate (AGR/TER/IPA/COM/EWT/VER/PER/
 // ORN/INS/IND/ARI/ACK/MSG). Transcribed from the MIT weso/CWR-DataApi field config (size + datatype +
 // lookup `source`). The grammar assembler turns a record's ordered field-key list into FieldSpec[] with
-// computed byte offsets — so adding a record type is data entry, not new code.
+// computed byte offsets: so adding a record type is data entry, not new code.
 //
 // Non-roman/unicode records (NPN/NPA/NWN/NOW/NPR/NAT) are intentionally absent because they never
 // appear in the ASCII files we send to a society. They need separate parser and grammar support.

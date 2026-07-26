@@ -1,4 +1,4 @@
-// Layer 4 — file/group rules. Issues are file-scoped (txSeq: null).
+// Layer 4: file/group rules. Issues are file-scoped (txSeq: null).
 
 import type { HeaderRecord } from '../../parse/parse-cwr';
 import { CWR_RECORD_LENGTHS } from '../../spec/record-lengths';
@@ -106,7 +106,7 @@ export const headerRule: FileRule = {
     if (!hdr) return [];
     const senderIdEmpty = !hdr.senderId || /^[0\s]*$/.test(hdr.senderId);
     return senderIdEmpty
-      ? [ctx.issue('error', 'header', 'Missing Sender ID in the HDR (CWR19-1070 §3.5 p14 field validation 3, ER — entire file rejected).', [hdr.line])]
+      ? [ctx.issue('error', 'header', 'Missing Sender ID in the HDR (CWR19-1070 §3.5 p14 field validation 3, ER: entire file rejected).', [hdr.line])]
       : [];
   },
 };

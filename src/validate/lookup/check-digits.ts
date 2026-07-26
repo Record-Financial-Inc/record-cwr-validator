@@ -1,11 +1,11 @@
 // CISAC identifier check digits. These catch transposition/typo errors that a length/format check
-// can't — a 1-digit slip in an IPI or ISWC produces a structurally valid but wrong identifier.
+// can't: a 1-digit slip in an IPI or ISWC produces a structurally valid but wrong identifier.
 //
 // Algorithms (ISO 7064 family; cross-checked against the CISAC IPI spec and the ISWC standard):
-//   • IPI Name Number  — 11 digits = 9 base + 2 check; weighted mod-101 over the 9 base digits.
-//   • IPI Base Number  — I-NNNNNNNNN-C; weighted mod-10 over the 9 digits (+2 for the leading 'I').
-//   • ISWC             — T-NNN.NNN.NNN-C; weighted mod-10 over the 9 work digits (+1 for the 'T').
-//   • ISRC has NO check digit — validate structurally only (handled elsewhere).
+//   • IPI Name Number : 11 digits = 9 base + 2 check; weighted mod-101 over the 9 base digits.
+//   • IPI Base Number : I-NNNNNNNNN-C; weighted mod-10 over the 9 digits (+2 for the leading 'I').
+//   • ISWC            : T-NNN.NNN.NNN-C; weighted mod-10 over the 9 work digits (+1 for the 'T').
+//   • ISRC has NO check digit: validate structurally only (handled elsewhere).
 //
 // Each returns null when the value isn't the full canonical length to check (e.g. a 9- or 10-digit IPI
 // fragment), so callers skip rather than false-flag a non-canonical-but-acceptable identifier.
@@ -22,7 +22,7 @@ export function ipiNameCheckDigits(base9: string): number {
 
 /**
  * Validate an IPI Name Number. An IPI Name Number is numerically an 11-digit value (9 base + 2 check),
- * so a 10-digit value is just one with a dropped leading zero — left-pad to 11 and validate, matching
+ * so a 10-digit value is just one with a dropped leading zero: left-pad to 11 and validate, matching
  * the CISAC reference (`sprintf("%011d", …)`). Returns null for values shorter than 10 significant
  * digits (likely a base-only fragment, not a full Name Number) so we don't false-flag them.
  */

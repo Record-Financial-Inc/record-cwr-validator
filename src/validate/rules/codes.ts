@@ -1,4 +1,4 @@
-// Layer 3 — CISAC code-table validity for the small complete enumerations, plus E-before-AM chain
+// Layer 3: CISAC code-table validity for the small complete enumerations, plus E-before-AM chain
 // ordering.
 // Governing rule: CWR19-1070 §5.4 p40 field validation 6 and §5.9 p47 field validation 8 (TR).
 

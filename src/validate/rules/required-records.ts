@@ -1,4 +1,4 @@
-// Layer 3 — required child records. The CWR BNF requires each work transaction to be a complete tree:
+// Layer 3: required child records. The CWR BNF requires each work transaction to be a complete tree:
 // a work header, at least one writer, and a territory record for every controlled party. A work missing
 // any of these registers incompletely (or is rejected). These emit `error`; the round-trip suite proves
 // a generated CWR always satisfies them, so the export gate never trips on our own output.
@@ -16,7 +16,7 @@ const CHILD_RECORDS = new Set([
 
 /**
  * Every work transaction must open with a header (NWR/REV/ISW). This is a FILE rule, not a
- * transaction rule, because the parser only forms a transaction once it has seen a header — an orphan
+ * transaction rule, because the parser only forms a transaction once it has seen a header: an orphan
  * child record before any header is assigned no transaction and would otherwise be dropped silently.
  * So we scan the raw record stream for any child record that carries no transaction (txSeq null).
  */
@@ -43,10 +43,10 @@ export const workWriterRequiredRule: TxRule = {
   layer: 3,
   phase: 11,
   run(ctx) {
-    if (!ctx.records.some(isWork)) return []; // not a work transaction — workHeader rule owns that
+    if (!ctx.records.some(isWork)) return []; // not a work transaction: workHeader rule owns that
     if (ctx.records.some(isWriter)) return [];
     const work = ctx.records.find(isWork)!;
-    return [ctx.issue('error', 'structure', 'Work has no writer (SWR/OWR) — at least one is required.', [work.line])];
+    return [ctx.issue('error', 'structure', 'Work has no writer (SWR/OWR): at least one is required.', [work.line])];
   },
 };
 
@@ -57,7 +57,7 @@ export const publisherTerritoryRequiredRule: TxRule = {
   layer: 3,
   phase: 11,
   run(ctx) {
-    // Only an SPT (controlled territory) satisfies an SPU — an OPT belongs to an uncontrolled
+    // Only an SPT (controlled territory) satisfies an SPU: an OPT belongs to an uncontrolled
     // publisher. Drop blank IPs so a blank-IP territory can't vacuously satisfy a blank-IP publisher.
     const sptIps = new Set(ctx.records.filter(isPubTerr).filter((t) => t.type === 'SPT').map((t) => t.ip).filter(Boolean));
     const out: CwrIssue[] = [];
@@ -78,7 +78,7 @@ export const writerTerritoryRequiredRule: TxRule = {
   layer: 3,
   phase: 11,
   run(ctx) {
-    // Only an SWT satisfies an SWR — an OWT belongs to an uncontrolled writer. Drop blank IPs.
+    // Only an SWT satisfies an SWR: an OWT belongs to an uncontrolled writer. Drop blank IPs.
     const swtIps = new Set(ctx.records.filter(isWriterTerr).filter((t) => t.type === 'SWT').map((t) => t.ip).filter(Boolean));
     const out: CwrIssue[] = [];
     for (const w of ctx.records.filter(isWriter)) {

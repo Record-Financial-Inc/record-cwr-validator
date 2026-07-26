@@ -1,4 +1,4 @@
-// Layer 3 — field format validity. Phase 1 covers the IPI Name Number (9–11 digits), the one
+// Layer 3: field format validity. Phase 1 covers the IPI Name Number (9–11 digits), the one
 // identifier our generator always writes and a society validates against the CISAC registry. ISWC/ISRC/
 // date/duration formats land in a later phase (their CWR field encodings need care).
 // Governing rule: CWR19-1070 §5.4 p41 field validation 10 and §5.9 p47 field validation 9 (FR).
@@ -19,7 +19,7 @@ export const ipiFormatRule: TxRule = {
       if (!isPublisher(r) && !isWriter(r)) continue;
       // IPI is optional on a record, but if present it must be well-formed.
       if (r.ipi && !IPI_REGEX.test(r.ipi)) {
-        out.push(ctx.issue('error', 'field', `IPI "${r.ipi}" is malformed — an IPI Name Number is 9–11 digits.`, [r.line]));
+        out.push(ctx.issue('error', 'field', `IPI "${r.ipi}" is malformed: an IPI Name Number is 9–11 digits.`, [r.line]));
       }
     }
     return out;

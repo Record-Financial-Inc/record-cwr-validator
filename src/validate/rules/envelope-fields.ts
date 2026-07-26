@@ -1,9 +1,9 @@
-// Layer 4 — field validation for the envelope records HDR/GRH/GRT/TRL. The grammar-driven field rules
-// (FIELD_FORMAT, LOOKUP_CODE) are Layer 3 and only see transaction records, so these "simple" records —
-// which carry the submitter, dates, CWR version, group/transaction type and counts — previously got NO
+// Layer 4: field validation for the envelope records HDR/GRH/GRT/TRL. The grammar-driven field rules
+// (FIELD_FORMAT, LOOKUP_CODE) are Layer 3 and only see transaction records, so these "simple" records :
+// which carry the submitter, dates, CWR version, group/transaction type and counts: previously got NO
 // field validation beyond HEADER_SENDER_ID. This closes that hole: it runs the same datatype + lookup
 // checks on the envelope records. Format defects emit `error` (a garbage date/count is a hard reject);
-// unrecognised codes emit `warning` (the lookup tables are 2.1-era — see lookup/tables.ts).
+// unrecognised codes emit `warning` (the lookup tables are 2.1-era: see lookup/tables.ts).
 // Governing rule: CWR19-1070 the record format tables for HDR, GRH, GRT and TRL (§3.5-§3.8) (as specified per field).
 
 import type { CwrIssue } from '../types';

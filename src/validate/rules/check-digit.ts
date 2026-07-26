@@ -1,4 +1,4 @@
-// Layer 3 — identifier check digits. A length/format check passes a transposed IPI or ISWC; the
+// Layer 3: identifier check digits. A length/format check passes a transposed IPI or ISWC; the
 // check digit catches it. Driven off the grammar's datatype (ipi_name_n / ipi_base_n / iswc) so it
 // covers every party identifier on every record without per-field wiring.
 //

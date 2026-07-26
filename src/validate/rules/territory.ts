@@ -1,7 +1,7 @@
-// Layer 3 — territory include/exclude logic. a society rejected the one submission file partly for "overlapping
+// Layer 3: territory include/exclude logic. a society rejected the one submission file partly for "overlapping
 // TIS records". The full TIS hierarchy (is France inside World, is the UK inside Europe…) isn't
 // loaded yet, so this catches the unambiguous, hierarchy-free case: a single interested party that
-// both INCLUDES and EXCLUDES the same TIS code — a contradictory territory scope no hierarchy can
+// both INCLUDES and EXCLUDES the same TIS code: a contradictory territory scope no hierarchy can
 // reconcile. The generator only ever emits 'I' territories, so this never fires on our own output.
 // Governing rule: CWR19-1070 §5.7 p44 record validation 5 (TR).
 
@@ -33,7 +33,7 @@ export const territoryIeContradictionRule: TxRule = {
     for (const byTis of byIp.values()) {
       for (const [tis, entry] of byTis) {
         if (entry.indicators.has('I') && entry.indicators.has('E')) {
-          out.push(ctx.issue('error', 'territory', `Territory ${tis} is both included and excluded for the same party — contradictory/overlapping territory scope.`, entry.lines));
+          out.push(ctx.issue('error', 'territory', `Territory ${tis} is both included and excluded for the same party: contradictory/overlapping territory scope.`, entry.lines));
         }
       }
     }

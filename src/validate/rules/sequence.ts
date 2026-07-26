@@ -14,7 +14,7 @@ const recSeqOf = (raw: string): number => {
   return Number.isNaN(n) ? NaN : n;
 };
 
-/** Layer 4 — NWR/REV transaction sequence numbers must strictly increase through the file. */
+/** Layer 4: NWR/REV transaction sequence numbers must strictly increase through the file. */
 export const txSequenceRule: FileRule = {
   id: 'TX_SEQUENCE',
   category: 'sequence',
@@ -28,12 +28,12 @@ export const txSequenceRule: FileRule = {
       if (prev === null) {
         // The first transaction in the group must be sequence 0 (CWR transaction sequence is 0-based).
         if (w.txSeq !== 0) {
-          out.push(ctx.issue('error', 'sequence', `First transaction sequence is ${w.txSeq} — NWR sequence numbers must start at 0.`, [w.line]));
+          out.push(ctx.issue('error', 'sequence', `First transaction sequence is ${w.txSeq}: NWR sequence numbers must start at 0.`, [w.line]));
         }
       } else if (w.txSeq <= prev) {
-        out.push(ctx.issue('error', 'sequence', `Transaction sequence ${w.txSeq} does not increase past the previous (${prev}) — NWR sequence numbers must be ordered and unique.`, [w.line]));
+        out.push(ctx.issue('error', 'sequence', `Transaction sequence ${w.txSeq} does not increase past the previous (${prev}): NWR sequence numbers must be ordered and unique.`, [w.line]));
       } else if (w.txSeq !== prev + 1) {
-        out.push(ctx.issue('error', 'sequence', `Transaction sequence jumps from ${prev} to ${w.txSeq} — NWR sequence numbers must be contiguous (no gaps).`, [w.line]));
+        out.push(ctx.issue('error', 'sequence', `Transaction sequence jumps from ${prev} to ${w.txSeq}: NWR sequence numbers must be contiguous (no gaps).`, [w.line]));
       }
       prev = w.txSeq;
     }
@@ -41,7 +41,7 @@ export const txSequenceRule: FileRule = {
   },
 };
 
-/** Layer 3 — record sequence numbers must strictly increase within a transaction. */
+/** Layer 3: record sequence numbers must strictly increase within a transaction. */
 export const recordSequenceRule: TxRule = {
   id: 'RECORD_SEQUENCE',
   category: 'sequence',

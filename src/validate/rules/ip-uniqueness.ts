@@ -1,6 +1,6 @@
-// Layer 3 — interested-party (#) uniqueness within a transaction. Each distinct party (publisher or
+// Layer 3: interested-party (#) uniqueness within a transaction. Each distinct party (publisher or
 // writer) must have its own IP within the work; the same IP on two party records means a party was
-// listed twice — a generalisation of the "duplicated SPU" defect a society flagged. (Territory records
+// listed twice: a generalisation of the "duplicated SPU" defect a society flagged. (Territory records
 // SPT/SWT legitimately reuse their party's IP, so they're not counted here.)
 // Governing rule: CWR19-1070 §5.4 p40 field validation 3 (TR).
 
@@ -21,7 +21,7 @@ export const ipUniqueRule: TxRule = {
       if (!r.ip) continue; // blank IPs can't be de-duplicated
       const prev = seen.get(r.ip);
       if (prev !== undefined) {
-        out.push(ctx.issue('error', 'duplicate', `Interested-party # "${r.ip}" is used by two parties in the work — each publisher/writer needs a distinct IP.`, [prev, r.line]));
+        out.push(ctx.issue('error', 'duplicate', `Interested-party # "${r.ip}" is used by two parties in the work: each publisher/writer needs a distinct IP.`, [prev, r.line]));
       } else {
         seen.set(r.ip, r.line);
       }

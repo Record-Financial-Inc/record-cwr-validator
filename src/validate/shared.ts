@@ -20,7 +20,7 @@ export const RIGHT_LABEL: Record<(typeof RIGHTS)[number], string> = {
   sr: 'sync',
 };
 
-// These assert the concrete record type — necessary because OtherRecord.type is `string`, so plain
+// These assert the concrete record type: necessary because OtherRecord.type is `string`, so plain
 // `r.type === 'NWR'` narrowing can't exclude it.
 export const isWork = (r: CwrRecord): r is WorkRecord => r.type === 'NWR' || r.type === 'REV' || r.type === 'ISW' || r.type === 'EXC';
 export const isPwr = (r: CwrRecord): r is PublisherWriterRecord => r.type === 'PWR';

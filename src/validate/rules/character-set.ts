@@ -1,4 +1,4 @@
-// Layer 3 — the CIS character set on names and titles.
+// Layer 3: the CIS character set on names and titles.
 //
 // CWR19-1070 requires names and titles to use only characters from the "Names" and "Titles"
 // sections of the allowed CIS character set: §4.2 p28 FV24 (work title), §5.4 p42 FV37 (publisher

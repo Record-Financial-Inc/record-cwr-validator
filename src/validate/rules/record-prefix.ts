@@ -1,4 +1,4 @@
-// Layer 4 — the record prefix (CWR19-1070 §2.1 Properties of EDI Components, p8-9).
+// Layer 4: the record prefix (CWR19-1070 §2.1 Properties of EDI Components, p8-9).
 //
 // Every record opens with the same 19 bytes: record type (3), transaction sequence (8), record
 // sequence (8). The validations on those bytes are the most severe in the specification, because a
@@ -16,7 +16,7 @@
 //
 // FV9 is unambiguous and ER: the length must match. The parser is nonetheless tolerant of records
 // that stop short of their specified width, because real files right-trim optional trailing fields
-// and societies do ingest them. That tolerance is a reading decision, not a licence — the rule says
+// and societies do ingest them. That tolerance is a reading decision, not a licence: the rule says
 // what it says.
 //
 // So a short record is reported, at warning severity, naming the rule and its ER standing. Erroring
@@ -46,14 +46,14 @@ export const recordPrefixRule: FileRule = {
   run(ctx) {
     const out: CwrIssue[] = [];
 
-    // FV1 — a record type the specification does not define.
+    // FV1: a record type the specification does not define.
     for (const r of ctx.records) {
       if (CWR_RECORD_LENGTHS[r.type] === undefined && !/^[A-Z]{3}$/.test(r.type)) {
-        out.push(ctx.issue('error', 'sequence', `"${r.type}" is not a valid record type (CWR19-1070 §2.1 p8 field validation 1, ER — entire file rejected).`, [r.line]));
+        out.push(ctx.issue('error', 'sequence', `"${r.type}" is not a valid record type (CWR19-1070 §2.1 p8 field validation 1, ER: entire file rejected).`, [r.line]));
       }
     }
 
-    // FV4 and FV8 — a detail record belongs to the transaction whose number it carries. The parser
+    // FV4 and FV8: a detail record belongs to the transaction whose number it carries. The parser
     // attributes records to the preceding header, so a record whose own prefix disagrees would
     // otherwise be silently reassigned rather than reported.
     let headerTx: number | null = null;
@@ -71,11 +71,11 @@ export const recordPrefixRule: FileRule = {
         continue;
       }
       if (!TRANSACTION_HEADS.has(r.type) && headerTx !== null && own !== headerTx) {
-        out.push(ctx.issue('error', 'sequence', `${r.type} carries transaction sequence ${own} but follows a transaction header numbered ${headerTx}. A detail record belongs to the transaction whose number it carries (CWR19-1070 §2.1 p9 field validations 4 and 8, ER — entire file rejected).`, [headerLine, r.line]));
+        out.push(ctx.issue('error', 'sequence', `${r.type} carries transaction sequence ${own} but follows a transaction header numbered ${headerTx}. A detail record belongs to the transaction whose number it carries (CWR19-1070 §2.1 p9 field validations 4 and 8, ER: entire file rejected).`, [headerLine, r.line]));
       }
     }
 
-    // FV9 — record length, grouped by record TYPE with a range rather than by exact width.
+    // FV9: record length, grouped by record TYPE with a range rather than by exact width.
     //
     // A right-trimmed file trims to wherever its last populated field ends, so its records come in
     // many lengths: one real file has PER records at twenty distinct widths. Keying the group on the

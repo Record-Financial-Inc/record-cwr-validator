@@ -1,6 +1,6 @@
-// Structural validators for CWR field datatypes — the format half of the CISAC field ruleset, driven
+// Structural validators for CWR field datatypes: the format half of the CISAC field ruleset, driven
 // off the grammar's `datatype`. These check shape only (a numeric field is digits, a date is a real
-// YYYYMMDD); identifier check digits (IPI/ISWC) live in their own rules. All accept a blank value —
+// YYYYMMDD); identifier check digits (IPI/ISWC) live in their own rules. All accept a blank value :
 // presence (mandatory/conditional) is a separate concern, so format never fires on an absent optional.
 
 /** A CWR date: 8 digits, either the all-zero "no date" sentinel or a real calendar date. */

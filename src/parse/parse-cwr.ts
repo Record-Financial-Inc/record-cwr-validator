@@ -28,7 +28,7 @@ interface BaseRecord {
    * Does this record's length match its CWR record type?
    *
    * When it does not, every field offset past the 19-char record prefix is wrong by construction,
-   * so the parsed field values are whatever bytes happen to land there — not data. Field-derived
+   * so the parsed field values are whatever bytes happen to land there: not data. Field-derived
    * rules must skip these records (see `TxContext.readable`); the record type and sequence prefix
    * remain trustworthy, so structural, ordering and count rules still use them.
    */
@@ -49,7 +49,7 @@ export interface WorkRecord extends BaseRecord {
   iswc: string;
 }
 
-/** SPU (controlled) / OPU (other) — publisher with PR/MR/SR OWNERSHIP shares. */
+/** SPU (controlled) / OPU (other): publisher with PR/MR/SR OWNERSHIP shares. */
 export interface PublisherRecord extends BaseRecord {
   type: 'SPU' | 'OPU';
   publisherSeq: number;
@@ -61,7 +61,7 @@ export interface PublisherRecord extends BaseRecord {
   ownership: RightShares;
 }
 
-/** SPT (controlled) / OPT (other) — publisher COLLECTION shares for one territory. */
+/** SPT (controlled) / OPT (other): publisher COLLECTION shares for one territory. */
 export interface PublisherTerritoryRecord extends BaseRecord {
   type: 'SPT' | 'OPT';
   ip: string;
@@ -70,7 +70,7 @@ export interface PublisherTerritoryRecord extends BaseRecord {
   tis: number;
 }
 
-/** SWR (controlled) / OWR (other) — writer with PR/MR/SR OWNERSHIP shares. */
+/** SWR (controlled) / OWR (other): writer with PR/MR/SR OWNERSHIP shares. */
 export interface WriterRecord extends BaseRecord {
   type: 'SWR' | 'OWR';
   ip: string;
@@ -83,7 +83,7 @@ export interface WriterRecord extends BaseRecord {
   ownership: RightShares;
 }
 
-/** SWT (controlled) / OWT (other) — writer COLLECTION shares for one territory. */
+/** SWT (controlled) / OWT (other): writer COLLECTION shares for one territory. */
 export interface WriterTerritoryRecord extends BaseRecord {
   type: 'SWT' | 'OWT';
   ip: string;
@@ -157,7 +157,7 @@ const num = (s: string): number => {
  * Reading is deliberately more tolerant than writing.
  *
  * We now GENERATE every record at its full CISAC width, but real third-party files right-trim
- * optional trailing fields — including the file a society accepted from a third-party converter, whose HDR stops at
+ * optional trailing fields: including the file a society accepted from a third-party converter, whose HDR stops at
  * 115 of 167 and whose SWR/OWR stop at 152 of 180. Treating those as malformed would fail files
  * the industry (and a society itself) accepts. A short record simply yields empty trailing fields, and
  * the field-level rules still flag anything genuinely missing.

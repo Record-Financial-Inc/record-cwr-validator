@@ -1,4 +1,4 @@
-// Layer 3 — recording and alternate-title identifiers (CWR19-1070 §5.21 REC p60, §5.15 ALT p53).
+// Layer 3: recording and alternate-title identifiers (CWR19-1070 §5.21 REC p60, §5.15 ALT p53).
 //
 //   REC FV9  (FR) EAN, if entered, must be a valid European Article Number.
 //   REC FV10 (FR) ISRC, if entered, must be a valid International Standard Recording Code.
@@ -52,17 +52,17 @@ export const recordingIdentifierRule: TxRule = {
       if (r.type === 'REC') {
         const isrc = field(r.raw, 'isrc').toUpperCase();
         if (isrc && !ISRC.test(isrc)) {
-          out.push(ctx.issue('warning', 'field', `ISRC "${isrc}" is not a valid International Standard Recording Code, which is two letters, three alphanumerics, then seven digits (CWR19-1070 §5.21 p60 field validation 10, FR — the field is rejected and the registration proceeds without it).`, [r.line]));
+          out.push(ctx.issue('warning', 'field', `ISRC "${isrc}" is not a valid International Standard Recording Code, which is two letters, three alphanumerics, then seven digits (CWR19-1070 §5.21 p60 field validation 10, FR: the field is rejected and the registration proceeds without it).`, [r.line]));
         }
 
         const validity = field(r.raw, 'isrc_validity').toUpperCase();
         if (isrc && validity && !ISRC_VALIDITY.has(validity)) {
-          out.push(ctx.issue('error', 'field', `ISRC Validity is "${validity}" but must be "Y", "N" or "U" when an ISRC is supplied (CWR19-1070 §5.21 p60 field validation 18, RR — record rejected).`, [r.line]));
+          out.push(ctx.issue('error', 'field', `ISRC Validity is "${validity}" but must be "Y", "N" or "U" when an ISRC is supplied (CWR19-1070 §5.21 p60 field validation 18, RR: record rejected).`, [r.line]));
         }
 
         const ean = field(r.raw, 'ean13');
         if (ean && !/^0*$/.test(ean) && !isValidEan13(ean)) {
-          out.push(ctx.issue('warning', 'field', `EAN "${ean}" is not a valid European Article Number: it must be thirteen digits ending in a correct check digit (CWR19-1070 §5.21 p60 field validation 9, FR — the field is rejected).`, [r.line]));
+          out.push(ctx.issue('warning', 'field', `EAN "${ean}" is not a valid European Article Number: it must be thirteen digits ending in a correct check digit (CWR19-1070 §5.21 p60 field validation 9, FR: the field is rejected).`, [r.line]));
         }
         continue;
       }
@@ -72,10 +72,10 @@ export const recordingIdentifierRule: TxRule = {
         // "OT" is the original title, which the work record already carries; an alternate title
         // record claiming to be the original is describing the same title twice.
         if (titleType === 'OT') {
-          out.push(ctx.issue('warning', 'field', `Alternate title is typed "OT" (Original Title). The original title belongs on the work record, so an alternate title takes any type but this one (CWR19-1070 §5.15 p53 field validation 2, FR — the field is rejected).`, [r.line]));
+          out.push(ctx.issue('warning', 'field', `Alternate title is typed "OT" (Original Title). The original title belongs on the work record, so an alternate title takes any type but this one (CWR19-1070 §5.15 p53 field validation 2, FR: the field is rejected).`, [r.line]));
         }
         if (LANGUAGE_REQUIRED_TITLES.has(titleType) && !field(r.raw, 'language_code')) {
-          out.push(ctx.issue('error', 'field', `Alternate title is typed "${titleType}" but carries no Language Code. An original or alternate title in another language must say which (CWR19-1070 §5.15 p53 field validation 6, RR — record rejected).`, [r.line]));
+          out.push(ctx.issue('error', 'field', `Alternate title is typed "${titleType}" but carries no Language Code. An original or alternate title in another language must say which (CWR19-1070 §5.15 p53 field validation 6, RR: record rejected).`, [r.line]));
         }
       }
     }

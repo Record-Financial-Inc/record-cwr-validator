@@ -1,4 +1,4 @@
-// Layer 3 — publisher chain-of-title consistency.
+// Layer 3: publisher chain-of-title consistency.
 //
 // A publisher's role determines what it may hold. CWR19-1070 §5.4:
 //
@@ -55,7 +55,7 @@ export const publisherChainRule: TxRule = {
       const head = chain[0];
       // A blank role is a missing mandatory field (§5.4 FV5), which MANDATORY_FIELD owns.
       if (head.role && !CHAIN_HEAD_ROLES.has(head.role)) {
-        out.push(ctx.issue('error', 'duplicate', `Chain ${seq} is headed by "${label(head)}" with publisher type "${head.role}". A chain must begin with an Original Publisher ("E") or Income Participant ("PA") (CWR19-1070 §5.4 p39 record validation 2, TR — transaction rejected).`, [head.line]));
+        out.push(ctx.issue('error', 'duplicate', `Chain ${seq} is headed by "${label(head)}" with publisher type "${head.role}". A chain must begin with an Original Publisher ("E") or Income Participant ("PA") (CWR19-1070 §5.4 p39 record validation 2, TR: transaction rejected).`, [head.line]));
       }
 
       let seenOriginal = false;
@@ -65,19 +65,19 @@ export const publisherChainRule: TxRule = {
 
         const owned = totalOwned(p);
 
-        // Field 19 / Record 3 — only an Original Publisher or Acquirer may own.
+        // Field 19 / Record 3: only an Original Publisher or Acquirer may own.
         if (!OWNING_ROLES.has(p.role) && owned > TOLERANCE) {
-          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" has publisher type "${p.role}" but holds ownership shares totalling ${(owned * 100).toFixed(2)}%. Only an Original Publisher ("E") or Acquirer ("AQ") may own; an administrator or sub-publisher collects without owning (CWR19-1070 §5.4 p41 field validation 19 and p39 record validation 3, TR — transaction rejected).`, [p.line]));
+          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" has publisher type "${p.role}" but holds ownership shares totalling ${(owned * 100).toFixed(2)}%. Only an Original Publisher ("E") or Acquirer ("AQ") may own; an administrator or sub-publisher collects without owning (CWR19-1070 §5.4 p41 field validation 19 and p39 record validation 3, TR: transaction rejected).`, [p.line]));
         }
 
-        // Record 8 — an Acquirer that acquired nothing is not an acquirer.
+        // Record 8: an Acquirer that acquired nothing is not an acquirer.
         if (p.role === 'AQ' && owned <= TOLERANCE) {
-          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" is an Acquirer ("AQ") but holds no ownership in any right. An Acquirer must hold more than zero in at least one of PR, MR or SR (CWR19-1070 §5.4 p40 record validation 8, TR — transaction rejected).`, [p.line]));
+          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" is an Acquirer ("AQ") but holds no ownership in any right. An Acquirer must hold more than zero in at least one of PR, MR or SR (CWR19-1070 §5.4 p40 record validation 8, TR: transaction rejected).`, [p.line]));
         }
 
-        // Field 32 — an Acquirer acquires from an Original Publisher, so one must precede it.
+        // Field 32: an Acquirer acquires from an Original Publisher, so one must precede it.
         if (p.role === 'AQ' && !seenOriginal) {
-          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" has publisher type "AQ" but no Original Publisher ("E") precedes it in chain ${seq} (CWR19-1070 §5.4 p42 field validation 32, TR — transaction rejected).`, [p.line]));
+          out.push(ctx.issue('error', 'duplicate', `"${label(p)}" has publisher type "AQ" but no Original Publisher ("E") precedes it in chain ${seq} (CWR19-1070 §5.4 p42 field validation 32, TR: transaction rejected).`, [p.line]));
         }
       }
     }
