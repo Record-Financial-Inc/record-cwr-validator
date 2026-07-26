@@ -29,6 +29,7 @@ import { envelopeConstantRule } from './rules/envelope-constants';
 import { publisherChainRule } from './rules/publisher-chain';
 import { transactionSharesRule } from './rules/transaction-shares';
 import { conditionalFieldRule } from './rules/conditional-fields';
+import { territoryRecordRule } from './rules/territory-records';
 import type { CwrRule, FileRule, TxRule } from './context';
 
 export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule, envelopeConstantRule];
@@ -57,5 +58,6 @@ export const TX_RULE_LIST: TxRule[] = [
   publisherChainRule,
   transactionSharesRule,
   conditionalFieldRule,
+  territoryRecordRule,
 ];
 export const ALL_RULES: CwrRule[] = [...FILE_RULE_LIST, ...TX_RULE_LIST];
