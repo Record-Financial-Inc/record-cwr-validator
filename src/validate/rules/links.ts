@@ -1,30 +1,51 @@
 // Layer 3 — PWR (Publisher-For-Writer) chain integrity. A controlled writer (SWR) must be linked
 // to a publisher in the work via a PWR record, and that PWR must point at a real publisher chain.
-// Without it, a society can't tell who administers the writer.
+// Without it there is no way to tell who administers the writer.
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';
-import { isPublisher, isWriter, isPwr } from '../shared';
+import { isPublisher, isWriter, isPwr, RIGHTS, TOLERANCE } from '../shared';
 import type { PublisherRecord, WriterRecord } from '../../parse/parse-cwr';
 
 const normaliseName = (value: string): string => value.trim().replace(/\s+/g, ' ').toUpperCase();
 
-/** Every controlled writer (SWR) needs at least one PWR linking it to a publisher.
- *  WARNING for now: a controlled writer with no representing publisher is a generator edge we audit
- *  before promoting to error (invariant I3). */
+/**
+ * Every controlled writer (SWR) needs a PWR linking it to a publisher — unless the work is
+ * unpublished.
+ *
+ * CWR19-1070 §5.9 p47 record validation 2 states the requirement with its own exemption: "Unless
+ * the total writers' ownership shares is equal to 100% for each right (that is, the work is
+ * unpublished), each SWR record must be [linked to a publisher]". When the writers hold everything
+ * there is no publisher to point at, and demanding a PWR would flag a conformant file.
+ *
+ * WARNING rather than error: a controlled writer with no representing publisher is an edge we audit
+ * before promoting (invariant I3).
+ */
 export const pwrLinkMissingRule: TxRule = {
   id: 'PWR_LINK_MISSING',
   category: 'link',
   layer: 3,
   phase: 1,
   run(ctx) {
+    const writers = ctx.readable.filter(isWriter);
+
+    // The exemption: for every right actually used in this work, the writers hold all of it. A
+    // right nobody claims (commonly SR) does not, on its own, make a work published.
+    const writersHoldEverything = RIGHTS.every((right) => {
+      const total = writers.reduce((sum, w) => sum + (w.ownership[right] ?? 0), 0);
+      return total <= TOLERANCE || Math.abs(total - 1) <= TOLERANCE;
+    }) && RIGHTS.some((right) => (
+      Math.abs(writers.reduce((sum, w) => sum + (w.ownership[right] ?? 0), 0) - 1) <= TOLERANCE
+    ));
+    if (writersHoldEverything) return [];
+
     const out: CwrIssue[] = [];
     const pwrs = ctx.readable.filter(isPwr);
-    for (const swr of ctx.readable) {
-      if (!isWriter(swr) || swr.type !== 'SWR') continue; // controlled writers only (OWR are uncontrolled)
+    for (const swr of writers) {
+      if (swr.type !== 'SWR') continue; // controlled writers only (OWR are uncontrolled)
       const linked = pwrs.some((p) => p.writerIp === swr.ip);
       if (!linked) {
-        out.push(ctx.issue('warning', 'link', `Controlled writer "${swr.lastName || swr.ip}" has no PWR record linking it to a publisher (CWR19-1070 §5.14 p52).`, [swr.line]));
+        out.push(ctx.issue('warning', 'link', `Controlled writer "${swr.lastName || swr.ip}" has no PWR record linking it to a publisher (CWR19-1070 §5.9 p47 record validation 2; §5.14 p52).`, [swr.line]));
       }
     }
     return out;
