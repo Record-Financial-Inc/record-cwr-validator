@@ -12,6 +12,7 @@
 //   GRH FV4  (GR) Version Number must be "02.20".
 //   GRH FV5  (GR) Each group transaction type may be used only once per file.
 //   GRT FV1  (GR) Group ID must equal the Group ID of the preceding GRH.
+//   NWR r22  (GR) A transaction's record type must match its group's transaction type (§4.2 p25).
 //
 // Dates, times, and the coded fields (transaction type, character set) are datatype- and
 // lookup-checked by ENVELOPE_FIELD, so they are not repeated here.
@@ -24,6 +25,9 @@ const EDI_STANDARD = '01.10';
 const CWR_VERSION = '2.2';
 const CWR_REVISION = 1;
 const GRH_VERSION = '02.20';
+
+/** Record types that open a transaction; each must match its group's declared type. */
+const TRANSACTION_HEADS = new Set(['NWR', 'REV', 'ISW', 'EXC']);
 
 const field = (raw: string, key: string): string | null =>
   extractRecord(raw)?.fields.get(key)?.value ?? null;
@@ -103,6 +107,26 @@ export const envelopeConstantRule: FileRule = {
         out.push(ctx.issue('error', 'header', `GRT Group ID "${idRaw}" does not match the Group ID ${openGroupId} on the GRH it closes (CWR19-1070 §3.7 p16 field validation 1, GR — group rejected).`, [r.line]));
       }
       openGroupId = null;
+    }
+
+    // §4.2 p25 transaction rule 22 (GR): a transaction's record type must be the transaction type
+    // its group declared. A group headed NWR cannot carry REV transactions.
+    let groupType: string | null = null;
+    let groupLine = 0;
+    for (const r of records) {
+      if (r.type === 'GRH') {
+        groupType = field(r.raw, 'transaction_type');
+        groupLine = r.line;
+        continue;
+      }
+      if (r.type === 'GRT') {
+        groupType = null;
+        continue;
+      }
+      if (!TRANSACTION_HEADS.has(r.type) || !groupType) continue;
+      if (r.type !== groupType) {
+        out.push(ctx.issue('error', 'header', `A ${r.type} transaction appears in a group declared as "${groupType}". The transaction record type must match the transaction type of its GRH (CWR19-1070 §4.2 p25 transaction rule 22, GR — group rejected).`, [groupLine, r.line]));
+      }
     }
 
     return out;
