@@ -3,7 +3,7 @@
 // this catches *different* codes that overlap by containment or partial membership: World + USA, EU +
 // France (member), EU + EEA (overlapping groups).
 //
-// Driven off the full CISAC TIS hierarchy (lookup/tis-hierarchy.ts). Severity `warning`: a writer that emits
+// Driven off the full CISAC TIS hierarchy (lookup/tis-hierarchy.ts). Severity `warning`: our generator
 // only ever emits a single World territory per party, so a generated file never trips it, and the
 // hierarchy is a ~2019 snapshot — a stale membership must not hard-reject a valid claim.
 

@@ -24,7 +24,7 @@ export function ipiNameCheckDigits(base9: string): number {
  * Validate an IPI Name Number. An IPI Name Number is numerically an 11-digit value (9 base + 2 check),
  * so a 10-digit value is just one with a dropped leading zero — left-pad to 11 and validate, matching
  * the CISAC reference (`sprintf("%011d", …)`). Returns null for values shorter than 10 significant
- * digits (likely a base-only fragment, not a full Name Number) so they are not false-flagged.
+ * digits (likely a base-only fragment, not a full Name Number) so we don't false-flag them.
  */
 export function validateIpiName(ipi: string): boolean | null {
   const d = ipi.trim();

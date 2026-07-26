@@ -156,14 +156,14 @@ const num = (s: string): number => {
 /**
  * Reading is deliberately more tolerant than writing.
  *
- * Records should be written at their full CISAC width, but real third-party files right-trim
- * optional trailing fields: files that societies ingest successfully have been seen with an HDR of
- * 115 characters against a specified 167, and SWR/OWR of 152 against 180. Treating those as
- * malformed would fail files the industry accepts, so a short record simply yields empty trailing
- * fields and the field-level rules still flag anything genuinely missing.
+ * We now GENERATE every record at its full CISAC width, but real third-party files right-trim
+ * optional trailing fields — including the file a society accepted from a third-party converter, whose HDR stops at
+ * 115 of 167 and whose SWR/OWR stop at 152 of 180. Treating those as malformed would fail files
+ * the industry (and a society itself) accepts. A short record simply yields empty trailing fields, and
+ * the field-level rules still flag anything genuinely missing.
  *
- * An OVER-length record stays malformed. That is the signature of a real defect: padding every
- * record to one uniform width shifts every field offset in the file.
+ * An OVER-length record stays malformed: that is the signature of a real defect (an earlier file
+ * of ours padded every record to a universal 364 characters, which a society could not ingest).
  */
 const SIMPLE_RECORDS = new Set(['HDR', 'GRH', 'GRT', 'TRL']);
 const isMalformedLength = (type: string, raw: string, expectedLength: number): boolean => {

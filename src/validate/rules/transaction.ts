@@ -12,7 +12,7 @@ import { normaliseIpi } from '../../internal/ipi';
  * a right that is not used. CWR19-1070 §4.2 p26 edit 11 sets the tolerance at ±0.06%.
  *
  * That tolerance is the only boundary. An earlier version widened it to ±0.075% and demoted the
- * band between the two to a warning, on the grounds that the drift appeared in a a third-party file a
+ * band between the two to a warning, on the grounds that the drift appeared in a a third-party converter file a
  * society had accepted. That file breaches this very rule, so it cannot license a looser reading:
  * a validator that relaxes the standard to match one accepted file is measuring the file, not the
  * standard. If a society chooses to accept more, that is their latitude to grant.

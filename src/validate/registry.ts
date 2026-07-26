@@ -25,9 +25,10 @@ import { envelopeFieldRule } from './rules/envelope-fields';
 import { duplicateWorkRule } from './rules/duplicate-work';
 import { partyIdentityRule } from './rules/party-identity';
 import { senderRegisterRule } from './rules/sender-register';
+import { envelopeConstantRule } from './rules/envelope-constants';
 import type { CwrRule, FileRule, TxRule } from './context';
 
-export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule];
+export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule, envelopeConstantRule];
 export const TX_RULE_LIST: TxRule[] = [
   ...TX_RULES,
   pwrLinkMissingRule,

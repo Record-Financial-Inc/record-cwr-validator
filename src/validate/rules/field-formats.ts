@@ -1,5 +1,5 @@
 // Layer 3 — field format validity. Phase 1 covers the IPI Name Number (9–11 digits), the one
-// identifier societies validate against the CISAC registry. ISWC/ISRC/
+// identifier our generator always writes and a society validates against the CISAC registry. ISWC/ISRC/
 // date/duration formats land in a later phase (their CWR field encodings need care).
 
 import type { CwrIssue } from '../types';

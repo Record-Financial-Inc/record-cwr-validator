@@ -2,7 +2,7 @@
 //   NWR → [SPU/SPT/OPU/OPT]* → [SWR/SWT/PWR/OWR/OWT]* → [ALT]* → [REC/…]
 // We assign each record a block rank and require ranks to be non-decreasing through the work. This
 // catches gross misordering (e.g. a writer record before the publishers, or REC before the writers)
-// without false-positiving on legitimate intra-block interleaving.
+// without false-positiving on the legitimate intra-block interleaving our generator produces.
 
 import type { CwrRecord } from '../../parse/parse-cwr';
 import type { CwrIssue } from '../types';

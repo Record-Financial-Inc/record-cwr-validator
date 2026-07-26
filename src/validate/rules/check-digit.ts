@@ -2,9 +2,9 @@
 // check digit catches it. Driven off the grammar's datatype (ipi_name_n / ipi_base_n / iswc) so it
 // covers every party identifier on every record without per-field wiring.
 //
-// Severity `warning`: a failing check digit is worth surfacing, but catalogues routinely hold IPIs
-// drawn from many sources whose canonical form has never been audited, so it must not hard-block a
-// submission. Raise it to `error` once a catalogue's identifiers are known to be clean.
+// Severity `warning`: a failing check digit is worth surfacing, but our catalogue holds IPIs from many
+// sources whose canonical form we haven't audited end-to-end, so it must not hard-block an export.
+// Promote to `error` once a catalogue-wide IPI/ISWC check-digit cleanup confirms our data is clean.
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

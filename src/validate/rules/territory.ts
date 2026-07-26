@@ -1,5 +1,5 @@
-// Layer 3 — territory include/exclude logic. "Overlapping TIS records" is a common rejection
-// reason. The full TIS hierarchy (is France inside World, is the UK inside Europe…) isn't
+// Layer 3 — territory include/exclude logic. a society rejected the one submission file partly for "overlapping
+// TIS records". The full TIS hierarchy (is France inside World, is the UK inside Europe…) isn't
 // loaded yet, so this catches the unambiguous, hierarchy-free case: a single interested party that
 // both INCLUDES and EXCLUDES the same TIS code — a contradictory territory scope no hierarchy can
 // reconcile. The generator only ever emits 'I' territories, so this never fires on our own output.

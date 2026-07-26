@@ -73,7 +73,7 @@ export const framingRule: FileRule = {
       out.push(ctx.issue('error', 'structure', 'GRH group header must appear immediately after HDR.', [records[1]?.line ?? records[0].line]));
     }
     // TRL (transmission) and GRT (group) trailers are MANDATORY. A file missing either has a
-    // truncated envelope: it would pass our gate and ship to a society, which rejects it. So a
+    // truncated envelope: it would pass our gate and ship to a society/the PRO, which rejects it. So a
     // missing trailer blocks (error), not warns, and validateCwr returns ok: false.
     const last = records[records.length - 1];
     if (last.type !== 'TRL') {

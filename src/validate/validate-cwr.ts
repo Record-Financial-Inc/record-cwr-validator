@@ -1,7 +1,7 @@
 // CWR file validator — the orchestrator behind the Registration portal, the catalogue pre-flight,
 // and the automatic export gate. It parses the file once (core/parsers/cwr-parser.ts), then runs the
 // registry's rules in layer order: Layer 4 (file/group) once, then Layer 3 (transaction) per work.
-// Independent of any writer, so it can falsify the output of the code that produced the file.
+// Independent of our generator, so it catches the defects a society rejects.
 
 import { parseCwr, type CwrRecord } from '../parse/parse-cwr';
 import type { CwrIssue, CwrValidationResult } from './types';

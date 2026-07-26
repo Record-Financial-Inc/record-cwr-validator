@@ -1,13 +1,13 @@
 // The CWR field-requirements matrix — the single source of truth for field byte-positions, datatypes,
 // presence (M/C/O) and lookup-table bindings, one entry per record type.
 //
-// Provenance: field order + sizes follow the CISAC CWR 2.2 record layout. For the records a writer emits
+// Provenance: field order + sizes follow the CISAC CWR 2.2 record layout. For the records we GENERATE
 // (HDR/GRH/NWR/ALT/SPU/SPT/SWR/SWT/PWR/REC/GRT/TRL and their O* twins) the widths are transcribed from
-// a writer's record builders — the authoritative byte layout of an emitted file
+// core/generators/cwr/record-builders.ts — the authoritative byte-layout of the files we actually send
 // to a society — and proven byte-identical by tests/integration/cwr-grammar.test.ts (generate → extract →
 // equals input). They were cross-checked against the MIT weso/CWR-DataApi config; the one systematic
 // divergence is duration fields, which CWR 2.2 specifies as 6 chars (HHMMSS) where that 2.1-era config
-// used 8 — this matrix follows the 2.2 width. The remaining ~20 record types are not
+// used 8 — our generator (and this matrix) follow the 2.2 width. The remaining ~20 record types we do
 // not generate (AGR/TER/IPA/NPA/…) are added from that config in P10, where the parser exercises them.
 //
 // `source` on a field names its lookup table (P7 wires these to the vendored code lists). `lookup_int`
@@ -55,7 +55,7 @@ interface RecordDecl {
   /** 'simple' records (HDR/GRH/GRT/TRL) carry only a 3-char record-type prefix; 'transaction'
    *  records (everything inside a work) also carry an 8-char transaction- and record-sequence number. */
   cls: 'simple' | 'transaction';
-  /** Whether a writer emits this record, so its layout is byte-verified by the consistency test. */
+  /** Whether our generator emits this record (so it is byte-verified by the consistency test). */
   emitted: boolean;
   fields: FieldDecl[];
 }
@@ -271,9 +271,9 @@ const GRAMMAR: Record<string, FieldSpec[]> = Object.fromEntries(
   Object.entries(DECLS).map(([head, decl]) => [head, assemble(decl)]),
 );
 
-// ── Records validated but not emitted by a writer ─────────────────────────────────────────────────
+// ── Records we validate but do not generate (P10) ─────────────────────────────────────────────────
 // Each is an ordered list of field keys resolved through FIELD_DEFS; all are transaction records and
-// all fit the ASCII record set validated here. Non-roman/unicode records are excluded (see field-defs.ts).
+// all fit the ASCII record set we validate. Non-roman/unicode records are excluded (see field-defs.ts).
 const CONFIG_RECORDS: Record<string, string[]> = {
   ACK: ['creation_date_time', 'original_group_id', 'original_transaction_sequence_n', 'original_transaction_type', 'creation_title', 'submitter_creation_n', 'recipient_creation_n', 'processing_date', 'transaction_status'],
   AGR: ['submitter_agreement_n', 'international_standard_code', 'agreement_type', 'agreement_start_date', 'agreement_end_date', 'retention_end_date', 'prior_royalty_status', 'prior_royalty_start_date', 'post_term_collection_status', 'post_term_collection_end_date', 'date_of_signature', 'number_of_works', 'sales_manufacture_clause', 'shares_change', 'advance_given', 'society_assigned_agreement_n'],
@@ -307,7 +307,7 @@ const CONFIG_GRAMMAR: Record<string, FieldSpec[]> = Object.fromEntries(
   Object.entries(CONFIG_RECORDS).map(([head, keys]) => [head, assembleConfig(keys)]),
 );
 
-/** Heads a writer emits (byte-verified by the consistency test), including their O* twins. */
+/** Heads our generator emits (byte-verified by the consistency test), incl. their O* twins. */
 export const EMITTED_HEADS: string[] = [
   ...Object.entries(DECLS).filter(([, d]) => d.emitted).map(([h]) => h),
   ...Object.entries(TWINS).filter(([, base]) => DECLS[base]?.emitted).map(([h]) => h),

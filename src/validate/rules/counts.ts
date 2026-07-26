@@ -36,7 +36,7 @@ export const countsRule: FileRule = {
     }
 
     // GRT counts the records within its group (GRH … GRT inclusive). Only check the single-group
-    // single-group case; multi-group files skip (framing/structure covers the rest).
+    // case our generator produces; multi-group files skip (framing/structure covers the rest).
     if (grt && grhCount === 1) {
       const grhIdx = recs.findIndex((r) => r.type === 'GRH');
       const grtIdx = recs.findIndex((r) => r.type === 'GRT');
