@@ -1,0 +1,45 @@
+{
+  "name": "record-cwr-validator",
+  "version": "0.1.0",
+  "description": "A CWR 2.2 reader and validator checked against CISAC CWR19-1070, where every rule cites its section, page and severity.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Record-Financial-Inc/record-cwr-validator.git"
+  },
+  "homepage": "https://github.com/Record-Financial-Inc/record-cwr-validator#readme",
+  "bugs": {
+    "url": "https://github.com/Record-Financial-Inc/record-cwr-validator/issues"
+  },
+  "keywords": [
+    "cwr",
+    "cisac",
+    "music-publishing",
+    "rights",
+    "royalties",
+    "validation",
+    "iswc",
+    "ipi"
+  ],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.4"
+  },
+  "sideEffects": false
+}
