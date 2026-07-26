@@ -1,23 +1,31 @@
 # What "100% conformance" can and cannot mean
 
-CWR19-1070 carries **226** validation rules governing the record types in a work registration
+CWR19-1070 carries **219** validation rules governing the record types in a work registration
 (HDR, GRH, GRT, TRL, the work transaction, publishers, writers, their territories, PWR, ALT, PER,
-REC, and the record prefix). Not all of them can be evaluated from a file.
+REC, the record prefix and the file level). Not all of them can be evaluated from a file.
 
-| | Rules | |
-|---|---:|---|
-| Checkable from the file alone | 165 | Structure, sequencing, shares, links, cross-field consistency |
-| Checkable with tables shipped here | 31 | Society codes, TIS territories, the CWR code tables |
-| **Reachable ceiling** | **196** | |
-| Need reference data nobody can distribute | 26 | See below |
-| Assert state across submissions | 4 | Has this work been registered before? Is this work number unique in the submitter's system? |
+The rule-by-rule mapping is in [cwr-coverage.md](cwr-coverage.md), generated from a map that fails
+if a rule is unmapped or a mapping names a rule that does not exist.
 
-**A validator working from a file cannot reach 226.** Thirty of those rules ask questions the file
+| | Rules |
+|---|---:|
+| Covered | **181** |
+| Implementable, not implemented | 19 |
+| **Reachable ceiling** | **200** |
+| Need reference data nobody can distribute | 16 |
+| Assert state across submissions | 3 |
+
+**A validator working from a file cannot reach 219.** Nineteen of those rules ask questions the file
 does not contain the answer to. Claiming otherwise would mean either skipping them silently or
 inventing an answer, and this engine does neither: an unevaluable rule reports as **unverifiable**,
 never as a pass. An ER-severity check that could not run is not a pass.
 
-## The 26 that need reference data
+An earlier version of this document put those figures at 26 and 4. They came from pattern-matching
+the rule text rather than from a mapping, and were wrong in both directions: they counted the
+character-set rules as unreachable, which an ASCII approximation partly covers, and counted rules
+against tables that do ship. The numbers above come from the checked map.
+
+## The 16 that need reference data
 
 | Data | Rules | Why it cannot ship |
 |---|---:|---|
@@ -37,7 +45,7 @@ Checking the superset is therefore a sound lower bound. Anything flagged is cert
 CIS set, so there are no false positives; what it misses are characters that are printable ASCII yet
 outside the CIS subset. Each finding states that limit rather than implying completeness.
 
-## The four stateful rules
+## The three stateful rules
 
 A work must not have been registered before; a submitter work number must be unique across the
 submitter's system; a REV must follow a successful registration; a submitter recording identifier
