@@ -39,6 +39,17 @@ export const envelopeConstantRule: FileRule = {
   phase: 4,
   run(ctx) {
     const out: CwrIssue[] = [];
+    // §3.7 p17 field validation 4: a monetary total without a currency is a number with no unit.
+    // The specification also notes both fields are ignored for CWR, so this is a GR, not an ER.
+    for (const grt of ctx.records.filter((r) => r.type === 'GRT')) {
+      const currency = grt.raw.slice(24, 27).trim();
+      const total = grt.raw.slice(27, 37).trim();
+      const hasTotal = total !== '' && !/^0+$/.test(total);
+      if (hasTotal && !currency) {
+        out.push(ctx.issue('error', 'mandatory', `The group trailer states a Total Monetary Value of "${total}" with no Currency Indicator, so the amount has no unit (CWR19-1070 §3.7 p17 field validation 4, GR: group rejected).`, [grt.line]));
+      }
+    }
+
     // Reads field values, so it must only consider records whose framing holds.
     const records = ctx.readable;
 

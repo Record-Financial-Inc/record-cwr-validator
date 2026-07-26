@@ -103,6 +103,10 @@ const DECLS: Record<string, RecordDecl> = {
       f('group_id', 'Group ID', 5, 'numeric', 'M'),
       f('transaction_count', 'Transaction Count', 8, 'numeric', 'M'),
       f('record_count', 'Record Count', 8, 'numeric', 'M'),
+      // §3.7 p17 runs GRT to 37. We omit this trailing block when writing (see CWR_EMIT_WIDTHS),
+      // but a group trailer that carries it is conformant and must be readable, not mis-framed.
+      f('currency_indicator', 'Currency Indicator', 3, 'lookup', 'C'),
+      f('total_monetary_value', 'Total Monetary Value', 10, 'numeric', 'O'),
     ],
   },
   TRL: {
@@ -134,6 +138,15 @@ const DECLS: Record<string, RecordDecl> = {
       f('work_type', 'Work Type', 2, 'lookup', 'O', 'work_type'),
       f('grand_rights_indicator', 'Grand Rights Indicator', 1, 'boolean', 'O'),
       f('composite_component_count', 'Composite Component Count', 3, 'numeric', 'O'),
+      // CWR19-1070 §4.2 p22-25 runs the work record to 260. Modelling only the first 200 left
+      // these six fields unreadable, so every rule that would touch them silently could not fire.
+      // The first four are marked "for registrations with GEMA" but are part of the record for
+      // everyone, and a file carrying them is a file we must be able to read.
+      f('date_publication_printed_edition', 'Date of Publication of Printed Edition', 8, 'date', 'O'),
+      f('exceptional_clause', 'Exceptional Clause', 1, 'flag', 'O'),
+      f('opus_n', 'Opus Number', 25, 'alphanum', 'O'),
+      f('catalogue_n', 'Catalogue Number', 25, 'alphanum', 'O'),
+      f('priority_flag', 'Priority Flag', 1, 'flag', 'O'),
     ],
   },
   ALT: {
@@ -275,7 +288,7 @@ const GRAMMAR: Record<string, FieldSpec[]> = Object.fromEntries(
 // Each is an ordered list of field keys resolved through FIELD_DEFS; all are transaction records and
 // all fit the ASCII record set we validate. Non-roman/unicode records are excluded (see field-defs.ts).
 const CONFIG_RECORDS: Record<string, string[]> = {
-  ACK: ['creation_date_time', 'original_group_id', 'original_transaction_sequence_n', 'original_transaction_type', 'creation_title', 'submitter_creation_n', 'recipient_creation_n', 'processing_date', 'transaction_status'],
+  ACK: ['ack_creation_date', 'ack_creation_time', 'original_group_id', 'original_transaction_sequence_n', 'original_transaction_type', 'creation_title', 'submitter_creation_n', 'recipient_creation_n', 'processing_date', 'transaction_status'],
   AGR: ['submitter_agreement_n', 'international_standard_code', 'agreement_type', 'agreement_start_date', 'agreement_end_date', 'retention_end_date', 'prior_royalty_status', 'prior_royalty_start_date', 'post_term_collection_status', 'post_term_collection_end_date', 'date_of_signature', 'number_of_works', 'sales_manufacture_clause', 'shares_change', 'advance_given', 'society_assigned_agreement_n'],
   ARI: ['society_n', 'work_n', 'type_of_right', 'subject_code', 'note'],
   COM: ['component_title', 'iswc', 'submitter_work_n', 'component_duration', 'writer_1_last_name', 'writer_1_first_name', 'writer_1_ipi_name_n', 'writer_2_last_name', 'writer_2_first_name', 'writer_2_ipi_name_n', 'writer_1_ipi_base_n', 'writer_2_ipi_base_n'],
@@ -285,7 +298,7 @@ const CONFIG_RECORDS: Record<string, string[]> = {
   INS: ['number_voices', 'standard_instrumentation_type', 'instrumentation_description'],
   IPA: ['agreement_role_code', 'ipi_name_n', 'ipi_base_n', 'ip_n', 'ip_last_name', 'ip_writer_first_name', 'pr_society', 'pr_share', 'mr_society', 'mr_share', 'sr_society', 'sr_share'],
   PER: ['performing_artist_last_name', 'performing_artist_first_name', 'performing_artist_ipi_name_n', 'performing_artist_ipi_base_n'],
-  ORN: ['intended_purpose', 'production_title', 'cd_identifier', 'cut_number', 'library', 'bltvr', 'visan', 'production_n', 'episode_title', 'episode_n', 'year_production', 'audio_visual_key'],
+  ORN: ['intended_purpose', 'production_title', 'cd_identifier', 'cut_number', 'library', 'bltvr', 'visan', 'production_n', 'episode_title', 'episode_n', 'year_production', 'audio_visual_key', 'visan_isan', 'visan_episode', 'visan_check_digit_1', 'visan_version', 'visan_check_digit_2', 'eidr_root_n', 'eidr_check_digit'],
   TER: ['inclusion_exclusion_indicator', 'tis_numeric_code'],
   MSG: ['message_type', 'original_record_sequence_n', 'message_record_type', 'message_level', 'validation_n', 'message_text'],
 };

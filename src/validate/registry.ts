@@ -27,6 +27,7 @@ import { partyIdentityRule } from './rules/party-identity';
 import { senderRegisterRule } from './rules/sender-register';
 import { envelopeConstantRule } from './rules/envelope-constants';
 import { publisherChainRule } from './rules/publisher-chain';
+import { conditionalRecordsRule } from './rules/conditional-records';
 import { transactionSharesRule } from './rules/transaction-shares';
 import { conditionalFieldRule } from './rules/conditional-fields';
 import { territoryRecordRule } from './rules/territory-records';
@@ -38,6 +39,7 @@ import type { CwrRule, FileRule, TxRule } from './context';
 
 export const FILE_RULE_LIST: FileRule[] = [...FILE_RULES, countsRule, txSequenceRule, workHeaderRequiredRule, envelopeFieldRule, duplicateWorkRule, partyIdentityRule, senderRegisterRule, envelopeConstantRule, recordPrefixRule];
 export const TX_RULE_LIST: TxRule[] = [
+  conditionalRecordsRule,
   ...TX_RULES,
   pwrLinkMissingRule,
   pwrSeqMismatchRule,

@@ -30,12 +30,27 @@ function splitCitation(message: string): { body: string; citation: string | null
   return { body: end.slice(0, open).trim(), citation: inner };
 }
 
-/** One finding, plus how many records carry it. */
+/** Line numbers kept on one instance before the rest are counted rather than listed. */
+const LINES_PER_INSTANCE = 6;
+
+/** One finding, plus every place in the file that carries it. */
 export interface RuleInstance {
   issue: CwrIssue;
   /** The offending values this instance names, e.g. `["00031520"]`. */
   values: string[];
   count: number;
+  /**
+   * How many distinct works carry this value.
+   *
+   * One value commonly spans many works: an EAN is an album barcode, so every track of the album
+   * reports it. Naming `issue.workTitle` alone would present the first of eight works as though it
+   * were the only one.
+   */
+  works: number;
+  /** Lines this value appears on, first few. */
+  lines: number[];
+  /** True when `lines` is a partial list. */
+  moreLines: boolean;
 }
 
 /** One rule, and every value in the file that breaks it. */
@@ -92,8 +107,22 @@ export function groupByRule(issues: readonly CwrIssue[]): RuleGroup[] {
     const count = issue.occurrences ?? 1;
     group.total += count;
     const same = group.instances.find((i) => i.issue.message === issue.message);
-    if (same) same.count += count;
-    else group.instances.push({ issue, values, count });
+    if (same) {
+      same.count += count;
+      // A repeat in a different work is a different place, and the reader needs both counted.
+      if (issue.txSeq !== same.issue.txSeq) same.works += 1;
+      for (const line of issue.records) {
+        if (same.lines.length >= LINES_PER_INSTANCE) { same.moreLines = true; break; }
+        if (!same.lines.includes(line)) same.lines.push(line);
+      }
+    } else {
+      group.instances.push({
+        issue, values, count,
+        works: 1,
+        lines: issue.records.slice(0, LINES_PER_INSTANCE),
+        moreLines: issue.records.length > LINES_PER_INSTANCE || issue.truncatedRecords === true,
+      });
+    }
   }
   return order;
 }

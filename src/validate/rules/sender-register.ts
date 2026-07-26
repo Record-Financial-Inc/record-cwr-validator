@@ -19,6 +19,12 @@
 import type { HeaderRecord } from '../../parse/parse-cwr';
 import type { CwrIssue } from '../types';
 import type { FileRule } from '../context';
+import { LOOKUP_TABLES } from '../lookup/tables';
+
+/** Society codes, normalised without leading zeros so "021" and "21" are the same society. */
+const SOCIETY_CODES = new Set(
+  [...(LOOKUP_TABLES.society_code ?? [])].map((c) => c.trim().replace(/^0+/, '')).filter(Boolean),
+);
 
 /** One row of the CWR Sender ID and Codes Table. */
 export interface CwrSenderEntry {
@@ -73,8 +79,34 @@ export const senderRegisterRule: FileRule = {
       return out;
     }
 
-    // A society sender is checked against the Society Code table (FV4), not this register.
-    if (senderType === 'SO') return out;
+    // §3.5 FV4: a society sender identifies itself by its society code, which we do hold, so this
+    // one needs no register. The table is a CWR 2.1-era snapshot, so an unknown code is reported
+    // as a warning rather than asserted to be wrong.
+    if (senderType === 'SO') {
+      const code = senderId.replace(/^0+/, '');
+      if (!code) {
+        out.push(ctx.issue('error', 'header', 'Sender Type is "SO" but Sender ID is empty. A society sender must give its society code (CWR19-1070 §3.5 p14 field validation 4, ER: entire file rejected).', [hdr.line]));
+      } else if (!SOCIETY_CODES.has(code)) {
+        out.push(ctx.issue('warning', 'header', `Sender Type is "SO" but Sender ID "${senderId.trim()}" is not a society code we hold. §3.5 p14 field validation 4 requires it to match the Society Code Table at ER severity; our copy of that table is a CWR 2.1-era snapshot, so this is reported rather than asserted.`, [hdr.line]));
+      }
+      return out;
+    }
+
+    // §3.5 FV7: an administrative agency files under the IPI Name Number of the publisher it acts
+    // for. Which publisher that is, is not something a file can tell us, so only the shape of the
+    // identifier is checked here and the rest is stated plainly as unverifiable.
+    if (senderType === 'AA') {
+      const digits = senderId.replace(/\D/g, '');
+      if (!/^\d{9,11}$/.test(digits)) {
+        out.push(ctx.issue('error', 'header', `Sender Type is "AA" but Sender ID "${senderId.trim()}" is not an IPI Name Number, which is 9 to 11 digits. An administrative agency files under the IPI of the publisher it acts for (CWR19-1070 §3.5 p14 field validation 7, ER: entire file rejected).`, [hdr.line]));
+      } else {
+        out.push({
+          ...ctx.issue('warning', 'header', `Sender Type is "AA", so §3.5 p14 field validation 7 requires Sender ID "${senderId.trim()}" to be the IPI Name Number of the publisher this agency acts for. Which publisher that is cannot be determined from the file, so the identifier's shape is all that was checked.`, [hdr.line]),
+          unverified: true,
+        });
+      }
+      return out;
+    }
 
     // The identity the register is searched for: the full IPNN when the type carries its first two
     // digits, otherwise the Sender ID as filed.

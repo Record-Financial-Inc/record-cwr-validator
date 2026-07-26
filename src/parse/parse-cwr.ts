@@ -49,7 +49,7 @@ export interface WorkRecord extends BaseRecord {
   iswc: string;
 }
 
-/** SPU (controlled) / OPU (other): publisher with PR/MR/SR OWNERSHIP shares. */
+/** SPU (controlled) / OPU (other) — publisher with PR/MR/SR OWNERSHIP shares. */
 export interface PublisherRecord extends BaseRecord {
   type: 'SPU' | 'OPU';
   publisherSeq: number;
@@ -61,7 +61,7 @@ export interface PublisherRecord extends BaseRecord {
   ownership: RightShares;
 }
 
-/** SPT (controlled) / OPT (other): publisher COLLECTION shares for one territory. */
+/** SPT (controlled) / OPT (other) — publisher COLLECTION shares for one territory. */
 export interface PublisherTerritoryRecord extends BaseRecord {
   type: 'SPT' | 'OPT';
   ip: string;
@@ -70,7 +70,7 @@ export interface PublisherTerritoryRecord extends BaseRecord {
   tis: number;
 }
 
-/** SWR (controlled) / OWR (other): writer with PR/MR/SR OWNERSHIP shares. */
+/** SWR (controlled) / OWR (other) — writer with PR/MR/SR OWNERSHIP shares. */
 export interface WriterRecord extends BaseRecord {
   type: 'SWR' | 'OWR';
   ip: string;
@@ -83,7 +83,7 @@ export interface WriterRecord extends BaseRecord {
   ownership: RightShares;
 }
 
-/** SWT (controlled) / OWT (other): writer COLLECTION shares for one territory. */
+/** SWT (controlled) / OWT (other) — writer COLLECTION shares for one territory. */
 export interface WriterTerritoryRecord extends BaseRecord {
   type: 'SWT' | 'OWT';
   ip: string;

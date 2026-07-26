@@ -100,12 +100,14 @@ export function formatCwrReport(result: CwrValidationResult, meta: CwrReportMeta
       out.push('');
       out.push(`  [${group.severity === 'error' ? 'ERROR' : 'WARN '}] ${group.rule}  ×${group.total.toLocaleString()}`);
       if (group.citation) out.push(`          ${group.citation}`);
-      for (const { issue, values, count } of group.instances) {
+      for (const { issue, values, count, works, lines, moreLines } of group.instances) {
         const parts = [
           values.join(' '),
-          issue.workTitle ?? '',
+          // One value often spans many works (an EAN is an album barcode); naming the first would
+          // present it as the only one.
+          works > 1 ? `${works.toLocaleString()} works` : issue.workTitle ?? '',
           count > 1 ? `×${count.toLocaleString()}` : '',
-          issue.records.length ? `L${issue.records.join(', L')}${issue.truncatedRecords ? '…' : ''}` : '',
+          lines.length ? `L${lines.join(', L')}${moreLines ? '…' : ''}` : '',
         ].filter(Boolean);
         out.push(`          ${parts.join('  ')}`);
       }

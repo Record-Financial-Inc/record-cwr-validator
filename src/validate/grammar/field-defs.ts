@@ -60,7 +60,9 @@ export const FIELD_DEFS: Record<string, FieldDef> = {
 
   // component / cross-title (COM/EWT/VER)
   component_title: { name: 'Component Title', len: 60, datatype: 'alphanum' },
-  component_duration: { name: 'Duration', len: 8, datatype: 'time' },
+  // CWR19-1070 §5.17 p56 gives Duration as 6 (HHMMSS), not 8. Carried as 8, every COM field
+  // after it was read 2 bytes off. Used by COM alone, so the correction is contained.
+  component_duration: { name: 'Duration', len: 6, datatype: 'time' },
   entire_work_title: { name: 'Entire Work Title', len: 60, datatype: 'alphanum' },
   original_title: { name: 'Original Work Title', len: 60, datatype: 'alphanum' },
   language_code: { name: 'Language Code', len: 2, datatype: 'alphanum', source: 'language_code' },
@@ -105,9 +107,25 @@ export const FIELD_DEFS: Record<string, FieldDef> = {
   episode_n: { name: 'Episode #', len: 20, datatype: 'alphanum' },
   year_production: { name: 'Year of Production', len: 4, datatype: 'numeric' },
   audio_visual_key: { name: 'AVI Field', len: 18, datatype: 'alphanum' },
+  // CWR19-1070 §5.22 runs ORN to 348. The V-ISAN (302-327) and EIDR (328-348) blocks were
+  // unmodelled, so 47 characters of every work-origin record were unreadable. Both are given as
+  // grouped identifiers whose parts carry their own check characters; the leaves are modelled
+  // here so a rule can reach any one of them.
+  visan_isan: { name: 'V-ISAN ISAN Root Segment', len: 12, datatype: 'alphanum' },
+  visan_episode: { name: 'V-ISAN Episode', len: 4, datatype: 'alphanum' },
+  visan_check_digit_1: { name: 'V-ISAN Check Digit 1', len: 1, datatype: 'alphanum' },
+  visan_version: { name: 'V-ISAN Version', len: 8, datatype: 'alphanum' },
+  visan_check_digit_2: { name: 'V-ISAN Check Digit 2', len: 1, datatype: 'alphanum' },
+  eidr_root_n: { name: 'EIDR Root Number', len: 20, datatype: 'alphanum' },
+  eidr_check_digit: { name: 'EIDR Check Digit', len: 1, datatype: 'alphanum' },
 
   // acknowledgement (ACK)
-  creation_date_time: { name: 'Creation Date and Time', len: 16, datatype: 'alphanum' },
+  // CWR19-1070 §5.24 p61 gives these as two fields, Creation Date (8) then Creation Time (6).
+  // Carried as one 16-character field, they were 2 too long and every ACK field after them was
+  // read 2 bytes off, which matters because an acknowledgement file is how a society reports
+  // back why a registration was rejected.
+  ack_creation_date: { name: 'Creation Date', len: 8, datatype: 'date' },
+  ack_creation_time: { name: 'Creation Time', len: 6, datatype: 'time' },
   original_group_id: { name: 'Original Group ID', len: 5, datatype: 'numeric' },
   original_transaction_sequence_n: { name: 'Original Transaction Sequence #', len: 8, datatype: 'numeric' },
   original_transaction_type: { name: 'Original Transaction Type', len: 3, datatype: 'lookup', source: 'transaction_type' },
