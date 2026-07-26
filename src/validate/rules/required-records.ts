@@ -2,6 +2,7 @@
 // a work header, at least one writer, and a territory record for every controlled party. A work missing
 // any of these registers incompletely (or is rejected). These emit `error`; the round-trip suite proves
 // a generated CWR always satisfies them, so the export gate never trips on our own output.
+// Governing rule: CWR19-1070 §4.2 p24-25 transaction rules 7, 12 and 20 (TR).
 
 import type { CwrIssue } from '../types';
 import type { FileRule, TxRule } from '../context';

@@ -3,6 +3,7 @@
 // fully contiguous (each = previous + 1, catching duplicates, resets, reordering AND gaps). A 1-based
 // start reads as "off by one" to strict ingesters (a society could not upload our earlier 1-based file), so
 // the start value is now enforced too. Record sequence is 0-based per transaction.
+// Governing rule: CWR19-1070 §2.1 p8-9 field validations 2-8 (ER).
 
 import type { CwrIssue } from '../types';
 import type { FileRule, TxRule } from '../context';

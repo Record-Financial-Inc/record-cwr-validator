@@ -3,6 +3,7 @@
 // loaded yet, so this catches the unambiguous, hierarchy-free case: a single interested party that
 // both INCLUDES and EXCLUDES the same TIS code — a contradictory territory scope no hierarchy can
 // reconcile. The generator only ever emits 'I' territories, so this never fires on our own output.
+// Governing rule: CWR19-1070 §5.7 p44 record validation 5 (TR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

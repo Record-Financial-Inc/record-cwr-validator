@@ -3,6 +3,7 @@
 // malformed date or non-numeric count is an unambiguous CWR defect that a society rejects, so this emits
 // `error` — and the round-trip suite proves a generated CWR never trips it. Presence (mandatory/
 // conditional) and identifier check digits are separate rules.
+// Governing rule: CWR19-1070 the per-field datatype and range given in each record format table (as specified per field).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

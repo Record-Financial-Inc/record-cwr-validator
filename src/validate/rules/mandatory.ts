@@ -1,5 +1,6 @@
 // Layer 3 — mandatory field presence per record type (the CWR 2.2 "M" fields a society needs to
 // process a registration). Each missing field is one issue, scoped to its work.
+// Governing rule: CWR19-1070 §5.4 p40 and §5.9 p47 mandatory field validations (TR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

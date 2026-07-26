@@ -4,6 +4,7 @@
 // conditional nuances (an OWR may be "unknown", a publisher name is conditional on the unknown flag);
 // those keys are skipped here to avoid double-reporting. Blank/constant filler fields are skipped — they
 // are intentionally spaces. Emits `error`; the round-trip suite proves a generated CWR never trips it.
+// Governing rule: CWR19-1070 the M (mandatory) marking in each record format table (as specified per field).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

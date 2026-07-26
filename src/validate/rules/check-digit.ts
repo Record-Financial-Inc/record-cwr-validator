@@ -5,6 +5,7 @@
 // Severity `warning`: a failing check digit is worth surfacing, but our catalogue holds IPIs from many
 // sources whose canonical form we haven't audited end-to-end, so it must not hard-block an export.
 // Promote to `error` once a catalogue-wide IPI/ISWC check-digit cleanup confirms our data is clean.
+// Governing rule: CWR19-1070 §5.4 p41 field validation 10 and §5.9 p47 field validation 9 (FR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

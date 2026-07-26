@@ -3,9 +3,10 @@
 A CWR 2.2 reader and validator for Node, checked against CISAC **CWR19-1070** (Functional
 specifications: Common Works Registration, Version 2.2 Revision 2).
 
-Every rule cites the section, page and severity it comes from. Severities are the specification's
-own: **ER** entire file rejected, **GR** group rejected, **TR** transaction rejected, **RR** record
-rejected, **FR** field rejected.
+Every rule names the section, page and severity it comes from. Most carry that citation in the
+finding itself; the rest declare it at the rule, where one rule covers many fields and the precise
+citation is per-field. Severities are the specification's own: **ER** entire file rejected, **GR**
+group rejected, **TR** transaction rejected, **RR** record rejected, **FR** field rejected.
 
 ```ts
 import { parseCwr, validateCwr } from 'record-cwr-validator';

@@ -1,6 +1,7 @@
 // Layer 3 — field format validity. Phase 1 covers the IPI Name Number (9–11 digits), the one
 // identifier our generator always writes and a society validates against the CISAC registry. ISWC/ISRC/
 // date/duration formats land in a later phase (their CWR field encodings need care).
+// Governing rule: CWR19-1070 §5.4 p41 field validation 10 and §5.9 p47 field validation 9 (FR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

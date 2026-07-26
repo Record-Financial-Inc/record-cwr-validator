@@ -2,6 +2,7 @@
 // performance (PR) ownership, and publishers should hold at most 50%. A WARNING (a best-practice
 // range, not an a society hard-reject) gated to works whose PR already reconciles to 100% — otherwise the
 // overclaim/under-claim rule is the real signal.
+// Governing rule: CWR19-1070 §4.2 p26 transaction rule 24 (TR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

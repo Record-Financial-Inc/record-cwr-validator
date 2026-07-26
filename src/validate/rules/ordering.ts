@@ -3,6 +3,7 @@
 // We assign each record a block rank and require ranks to be non-decreasing through the work. This
 // catches gross misordering (e.g. a writer record before the publishers, or REC before the writers)
 // without false-positiving on the legitimate intra-block interleaving our generator produces.
+// Governing rule: CWR19-1070 §4.2 p27 transaction rule 43 (TR).
 
 import type { CwrRecord } from '../../parse/parse-cwr';
 import type { CwrIssue } from '../types';

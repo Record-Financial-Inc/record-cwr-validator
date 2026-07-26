@@ -2,6 +2,7 @@
 // fields are coded (carry a `source` lookup table); this checks each non-blank coded value against the
 // vendored CISAC code list. Emits `warning` (not error) because the vendored tables are CWR 2.1-era and
 // a stale list must never hard-reject a valid 2.2 code — see lookup/tables.ts.
+// Governing rule: CWR19-1070 the code tables named by each field in its record format table (as specified per field).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

@@ -2,6 +2,7 @@
 // writer) must have its own IP within the work; the same IP on two party records means a party was
 // listed twice — a generalisation of the "duplicated SPU" defect a society flagged. (Territory records
 // SPT/SWT legitimately reuse their party's IP, so they're not counted here.)
+// Governing rule: CWR19-1070 §5.4 p40 field validation 3 (TR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

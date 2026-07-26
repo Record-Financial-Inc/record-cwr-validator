@@ -6,6 +6,7 @@
 // Driven off the full CISAC TIS hierarchy (lookup/tis-hierarchy.ts). Severity `warning`: our generator
 // only ever emits a single World territory per party, so a generated file never trips it, and the
 // hierarchy is a ~2019 snapshot — a stale membership must not hard-reject a valid claim.
+// Governing rule: CWR19-1070 §5.7 p44 record validation 5 (TR).
 
 import type { CwrIssue } from '../types';
 import type { TxRule } from '../context';

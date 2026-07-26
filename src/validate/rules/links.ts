@@ -71,19 +71,19 @@ export const pwrSeqMismatchRule: TxRule = {
 
       const publisher = pubsBySeq.get(record.publisherSeq);
       if (!publisher) {
-        out.push(ctx.issue('error', 'link', `PWR references publisher sequence ${record.publisherSeq}, which has no matching publisher (SPU/OPU) in the work.`, [record.line]));
+        out.push(ctx.issue('error', 'link', `PWR references publisher sequence ${record.publisherSeq}, which has no matching publisher (SPU/OPU) in the work (CWR19-1070 §5.14 p52 field validation 7, TR — transaction rejected).`, [record.line]));
         continue;
       }
 
       const controlledWriterLink = currentWriter?.type === 'SWR';
       if ((controlledWriterLink || record.publisherIp) && record.publisherIp !== publisher.ip) {
-        out.push(ctx.issue('error', 'link', `PWR Publisher IP "${record.publisherIp}" does not match publisher sequence ${record.publisherSeq} IP "${publisher.ip}".`, [record.line, publisher.line]));
+        out.push(ctx.issue('error', 'link', `PWR Publisher IP "${record.publisherIp}" does not match publisher sequence ${record.publisherSeq} IP "${publisher.ip}" (CWR19-1070 §5.14 p52 field validations 9 and 12, TR — transaction rejected).`, [record.line, publisher.line]));
       }
       if ((controlledWriterLink || record.publisherName) && normaliseName(record.publisherName) !== normaliseName(publisher.name)) {
-        out.push(ctx.issue('error', 'link', `PWR Publisher Name "${record.publisherName}" does not match publisher sequence ${record.publisherSeq} name "${publisher.name}".`, [record.line, publisher.line]));
+        out.push(ctx.issue('error', 'link', `PWR Publisher Name "${record.publisherName}" does not match publisher sequence ${record.publisherSeq} name "${publisher.name}" (CWR19-1070 §5.14 p52 field validations 10 and 13).`, [record.line, publisher.line]));
       }
       if (currentWriter && (controlledWriterLink || record.writerIp) && record.writerIp !== currentWriter.ip) {
-        out.push(ctx.issue('error', 'link', `PWR Writer IP "${record.writerIp}" does not match the current writer IP "${currentWriter.ip}".`, [record.line, currentWriter.line]));
+        out.push(ctx.issue('error', 'link', `PWR Writer IP "${record.writerIp}" does not match the current writer IP "${currentWriter.ip}" (CWR19-1070 §5.14 p52 field validations 8 and 11, TR — transaction rejected).`, [record.line, currentWriter.line]));
       }
     }
     return out;
