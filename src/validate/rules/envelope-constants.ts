@@ -109,6 +109,27 @@ export const envelopeConstantRule: FileRule = {
       openGroupId = null;
     }
 
+    // §3.4 p12 file-level validations, all ER. The envelope is a strict alternation: HDR, then
+    // groups of GRH … GRT, then TRL, exactly once each at the outside.
+    const hdrs = records.filter((r) => r.type === 'HDR');
+    const trls = records.filter((r) => r.type === 'TRL');
+    if (hdrs.length > 1 || trls.length > 1) {
+      out.push(ctx.issue('error', 'header', `A file carries one HDR and one TRL; this one has ${hdrs.length} HDR and ${trls.length} TRL (CWR19-1070 §3.4 p12 file validation 8, ER — entire file rejected).`, [...hdrs, ...trls].map((r) => r.line).slice(0, 6)));
+    }
+    for (let i = 0; i < records.length; i += 1) {
+      const r = records[i];
+      const next = records[i + 1];
+      if (!next) continue;
+      // File validation 6 — a group header opens a group, so a transaction must follow it.
+      if (r.type === 'GRH' && !TRANSACTION_HEADS.has(next.type)) {
+        out.push(ctx.issue('error', 'header', `A GRH is followed by ${next.type}, but a group header must be followed by a transaction header record (CWR19-1070 §3.4 p12 file validation 6, ER — entire file rejected).`, [r.line, next.line]));
+      }
+      // File validation 7 — a group trailer closes a group, so another group or the file must follow.
+      if (r.type === 'GRT' && next.type !== 'GRH' && next.type !== 'TRL') {
+        out.push(ctx.issue('error', 'header', `A GRT is followed by ${next.type}, but a group trailer must be followed by another GRH or by the TRL (CWR19-1070 §3.4 p12 file validation 7, ER — entire file rejected).`, [r.line, next.line]));
+      }
+    }
+
     // §4.2 p25 transaction rule 22 (GR): a transaction's record type must be the transaction type
     // its group declared. A group headed NWR cannot carry REV transactions.
     let groupType: string | null = null;
