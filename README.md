@@ -80,6 +80,68 @@ could not run because its reference data was not supplied, not a defect found in
 *What it does not do* below. Say so in your own verdict: an unverifiable ER-severity check is not a
 pass.
 
+## What happens to the file
+
+A finding tells you what is wrong. It does not tell you what the society does with the file, and
+that answer is not in any one finding. It is a property of the whole set. One header error stops
+the file before a work is read. Four hundred ownership errors stop four hundred works and leave the
+rest. The count is similar. The consequence is not.
+
+`summariseValidation()` reduces a result to that answer. `verdictLead()` states it in one sentence.
+
+```ts
+import { validateCwr, summariseValidation, verdictLead } from 'record-cwr-validator';
+
+const report = validateCwr(text);
+const verdict = summariseValidation(report);
+
+console.log(verdictLead(verdict));
+// "The society refuses 62 of the 83 works in this file. It registers the other 21.
+//  Correct the works below, and the society accepts the whole file."
+
+verdict.fileFatal;        // true when the society refuses the file at the header
+verdict.affectedWorks;    // works that carry at least one error
+verdict.unverified;       // checks that could not run, for want of reference data
+verdict.categories;       // [{ category, errors, warnings }], the worst first
+```
+
+The summary holds numbers, not sentences. Build the sentence when you show it. A stored sentence is
+the copy of the day you stored it, and it does not improve when the copy improves.
+
+`formatVerdictSummary()` writes the same verdict as plain text, for an email or a ticket.
+
+## What the codes mean
+
+A CWR finding uses the codes the standard uses. The record types are three letters. The severity
+grades are two. A reader who does not know them cannot act on the finding.
+
+`CWR_GLOSSARY` holds every abbreviation this package can show. Each entry gives the full term, one
+plain sentence, and a group.
+
+```ts
+import { CWR_GLOSSARY, splitTerms } from 'record-cwr-validator';
+
+CWR_GLOSSARY.SPT;
+// { group: 'party',
+//   full: 'Publisher Territory of Control',
+//   gloss: 'The line that gives a publisher its collection share in one territory.' }
+
+CWR_GLOSSARY.ER;
+// { group: 'grade',
+//   full: 'Entire File Rejected',
+//   gloss: 'The society refuses the whole file. No work in the file is registered.' }
+```
+
+`splitTerms()` cuts a sentence into plain text and the abbreviations in it. Use it to mark the
+terms in a finding, so a reader can expand each one where it appears.
+
+```ts
+splitTerms('The HDR record identifies you as the sender.');
+// [{ text: 'The ', term: null },
+//  { text: 'HDR', term: 'HDR' },
+//  { text: ' record identifies you as the sender.', term: null }]
+```
+
 ## Why this exists
 
 CWR files are fixed-width and unforgiving, and societies differ in what they tell you when one

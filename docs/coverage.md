@@ -1,4 +1,4 @@
-# CWR19-1070 coverage — rule by rule
+# CWR19-1070 coverage: rule by rule
 
 Every validation rule governing a work registration, mapped to the engine rule that
 implements it or to the reason it cannot be. Generated from the specification text and a
@@ -7,12 +7,12 @@ not exist, so this cannot drift from the source or quietly omit anything.
 
 | | Rules | |
 |---|---:|---|
-| **Covered** | **181** | of 219 |
-| Implementable, not implemented | 19 | listed below |
-| Needs reference data that cannot be distributed | 16 | reports as unverifiable, never as a pass |
+| **Covered** | **201** | of 219 |
+| Implementable, not implemented | 0 | listed below |
+| Needs reference data that cannot be distributed | 15 | reports as unverifiable, never as a pass |
 | Asks about submission history, not this file | 3 | belongs to the system tracking submissions |
 
-**181 of 200 reachable rules** are implemented. 19 rules cannot be evaluated from a file at all, so 219 of 219 was never attainable.
+**201 of 201 reachable rules** are implemented. 18 rules cannot be evaluated from a file at all, so 219 of 219 was never attainable.
 
 Severities are the specification's: **ER** entire file, **GR** group, **TR** transaction,
 **RR** record, **FR** field rejected.
@@ -21,32 +21,12 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 
 | Rule | Sev | Requirement | Why open |
 |---|---|---|---|
-| HDR field 7 | ER | If Sender Type is equal to AA, Sender ID must contain the IPI# of the Publisher that the Admini | administrative-agency senders are not modelled |
-| GRT field 4 | GR | Currency Indicator is mandatory if Total Monetary Value is provided | currency fields the spec says are ignored for CWR |
-| NWR/REV/ISW/EXC trans 16 | TR | A non-controlled publisher (OPU) can not appear in a chain started with a controlled original p | OPU inside a controlled chain is not detected |
-| NWR/REV/ISW/EXC trans 25 | TR | For each SPU publisher chain (but not OPUs), the sum of at least one of PR Ownership Share, MR  | a chain holding nothing in any right is not detected |
-| NWR/REV/ISW/EXC trans 26 | TR | If an SPU record with publisher type “AQ” appears in a chain of title then the Ownership shares | acquirer-to-original share relationship is not checked |
-| NWR/REV/ISW/EXC trans 39 | TR | If CWR Work Type is equal to “FM”, the transaction must include an ORN (Work Origin) record wit | ORN records are not modelled |
-| NWR/REV/ISW/EXC trans 53 | TR | If Musical Work Distribution Category is equal to ‘SER’, the transaction must include an INS (I | INS records are not modelled |
-| SPU/OPU field 7 | TR | If Record Type is equal to SPU, Publisher Unknown Indicator must be blank. | SPU Publisher Unknown Indicator must be blank |
-| SPU/OPU field 9 | FR | If Record Type is equal to OPU and Publisher Unknown Indicator is equal to “Y”, Publisher Name  | OPU unknown-publisher name rule |
-| SPU/OPU field 27 | FR | If Record Type is “OPU”, Special Agreements Indicator can only be “L” or blank. | OPU special-agreement indicator restriction |
-| SPU/OPU field 28 | FR | If Record type is “OPU”, and Publisher type is invalid or missing, default to “E”. | a defaulting instruction to the recipient, not a check |
-| SPU/OPU field 29 | TR | If the Publisher Name matches the name of a society in the Society Code table, and the Publishe | publisher named like a society must carry a valid IPI |
-| SPU/OPU field 40 | TR | If Record Type is equal to SPU and is the collecting publisher the Publisher IPI Name Number mu | collecting publisher must carry an IPI Name Number |
-| SPT/OPT field 13 | RR | Sequence # must be 1 for the first SPT/OPT after an SPU/OPU, and increment by 1 for each subseq | per-publisher SPT sequence numbering |
-| SWR/OWR field 4 | TR | If Record Type is equal to SWR, Writer Unknown Indicator must be blank. | SWR Writer Unknown Indicator must be blank |
-| SWR/OWR field 6 | FR | If Record Type is equal to OWR, and Writer Unknown Indicator is equal to “Y”, Writer Last Name  | OWR unknown-writer name rule |
-| SWR/OWR field 20 | TR | When Version equals “MOD”, if Writer Designation code equal “C” or “CA” or “A” and with zero sh | MOD zero-share writer needs a matching writer elsewhere |
-| SWT/OWT field 10 | RR | Sequence # must be 1 for the first SWT after an SWR and increment by 1 for each subsequent SWT. | per-writer SWT sequence numbering |
-| REC field 1 | RR | At least one of the optional fields must be entered. | at least one optional recording field must be present |
 
 ## Not evaluable from a file
 
 | Rule | Sev | Needs |
 |---|---|---|
-| HDR field 4 | ER | Society Code Table (society senders) |
-| HDR field 6 | ER | Society Code Table (society senders) |
+| HDR field 6 | ER | Society Code Table names (the shipped table holds codes only) |
 | HDR field 8 | ER | Publisher Code Table |
 | NWR/REV/ISW/EXC trans 2 | FR | submission history |
 | NWR/REV/ISW/EXC trans 13 | TR | submission history |
@@ -56,18 +36,18 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | SPU/OPU field 24 | FR | IPI database |
 | SPU/OPU field 25 | FR | international agreements database |
 | SPU/OPU field 26 | FR | society agreement register |
+| SPU/OPU field 29 | TR | Society Code Table names (the shipped table holds codes only) |
 | SWR/OWR field 9 | FR | IPI database |
 | SWR/OWR field 22 | FR | IPI database |
 | PWR field 3 | FR | society agreement register |
 | PWR field 4 | FR | society agreement register |
 | PER field 2 | FR | IPI database |
 | PER field 3 | FR | IPI database |
-| REC field 14 | FR | BIEM/CISAC media type list |
 | REC field 19 | RR | submission history |
 
 ## Full map
 
-### Record prefix (§2.1) — 9/9 covered
+### Record prefix (§2.1): 9/9 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -81,7 +61,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 8 | ER | If any detail records belonging to a transaction header do not carry the same Transactio | `RECORD_PREFIX` |
 | field 9 | ER | Record length must match the record length specified within the specification. (ER) [1]  | `RECORD_PREFIX` |
 
-### File level (§3.4) — 10/10 covered
+### File level (§3.4): 10/10 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -96,17 +76,17 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 9 | ER | If the header (HDR) contains an invalid version number the entire file will be rejected | `ENVELOPE_CONSTANTS` |
 | field 10 | ER | If the header (HDR) contains a invalid revision number the entire file will be rejected | `ENVELOPE_CONSTANTS` |
 
-### Transmission header (§3.5) — 12/16 covered
+### Transmission header (§3.5): 14/16 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
 | field 1 | ER | Record Type must be equal to HDR. | `FRAMING` |
 | field 2 | ER | Sender Type must be equal to PB (publisher), SO (society), WR (writer), or AA (administr | `SENDER_REGISTERED` |
 | field 3 | ER | If Sender Type is equal to PB, WR, or AA, Sender ID must be entered and must match the a | `SENDER_REGISTERED` |
-| field 4 | ER | If Sender Type is equal to SO, Sender ID must be entered and must match an entry in the  | _not evaluable_ |
+| field 4 | ER | If Sender Type is equal to SO, Sender ID must be entered and must match an entry in the  | `SENDER_REGISTERED` |
 | field 5 | ER | If Sender Type is equal to PB, Sender Name must match the name on the corresponding entr | `SENDER_REGISTERED` |
 | field 6 | ER | If Sender Type is equal to SO, Sender Name must match the name on the corresponding entr | _not evaluable_ |
-| field 7 | ER | If Sender Type is equal to AA, Sender ID must contain the IPI# of the Publisher that the | _gap_ |
+| field 7 | ER | If Sender Type is equal to AA, Sender ID must contain the IPI# of the Publisher that the | `SENDER_REGISTERED` |
 | field 8 | ER | If Sender Type is equal to AA, Sender Name must match the name on the corresponding entr | _not evaluable_ |
 | field 9 | ER | EDI Standard Version Number must be equal to the constant value “01.10”. | `ENVELOPE_CONSTANTS` |
 | field 10 | ER | Creation Date must be a valid date. | `ENVELOPE_FIELD` |
@@ -117,7 +97,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 15 | ER | Version if entered and must be 2.2 | `ENVELOPE_CONSTANTS` |
 | field 16 | ER | Revision number if entered must be a valid CWR version 2.2 revision number from the vers | `ENVELOPE_CONSTANTS` |
 
-### Group header (§3.6) — 5/5 covered
+### Group header (§3.6): 5/5 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -127,16 +107,16 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 4 | GR | For use of the CWR version 2 as described in this document, the Version Number must be ' | `ENVELOPE_CONSTANTS` |
 | field 5 | GR | Each Group Transaction type can only be used once per file. | `ENVELOPE_CONSTANTS` |
 
-### Group trailer (§3.7) — 3/4 covered
+### Group trailer (§3.7): 4/4 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
 | field 1 | GR | Group ID must be equal to the Group ID presented on the previous GRH record. | `ENVELOPE_CONSTANTS` |
 | field 2 | GR | Transaction count must be equal to the total number of transactions within this group. | `TRAILER_COUNTS` |
 | field 3 | GR | Record count must be equal to the total number of physical records inclusive of the GRH  | `TRAILER_COUNTS` |
-| field 4 | GR | Currency Indicator is mandatory if Total Monetary Value is provided | _gap_ |
+| field 4 | GR | Currency Indicator is mandatory if Total Monetary Value is provided | `ENVELOPE_CONSTANTS` |
 
-### Transmission trailer (§3.8) — 3/3 covered
+### Transmission trailer (§3.8): 3/3 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -144,7 +124,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 2 | ER | Transaction count must be equal to the number of transactions within the entire file. | `TRAILER_COUNTS` |
 | field 3 | ER | Record count must be equal to the number of physical records inclusive of the HDR and TR | `TRAILER_COUNTS` |
 
-### Work registration (§4.2) — 41/48 covered
+### Work registration (§4.2): 46/48 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -183,21 +163,21 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | trans 13 | TR | If Record Type is "NWR", the work can not previously have been sent and accepted on a CW | _not evaluable_ |
 | trans 14 | TR | The total of collection shares cannot exceed 100% for a given right for a territory. Not | `COLLECTION_TERRITORY` |
 | trans 15 | TR | There must be at least one writer (Writer Designation Code = “CA”, “A”, “C”) in a work. | `TRANSACTION_SHARES` |
-| trans 16 | TR | A non-controlled publisher (OPU) can not appear in a chain started with a controlled ori | _gap_ |
+| trans 16 | TR | A non-controlled publisher (OPU) can not appear in a chain started with a controlled ori | `PARTY_CONSISTENCY` |
 | trans 17 | TR | There can only be one original publisher (Publisher Type = “E”) in a publisher chain. | `TRANSACTION_SHARES` |
 | trans 20 | TR | For each writer controlled by the submitter that has collection shares, there must be at | `WRITER_TERRITORY_REQUIRED` |
 | trans 22 | GR | The Transaction Record Type (e.g. NWR or REV) must be the same as the Transaction Type o | `ENVELOPE_CONSTANTS` |
 | trans 23 | TR | If Version Type is equal to “ORI”, there cannot be an SWR or OWR record that contains a  | `CONDITIONAL_FIELDS` |
 | trans 24 | TR | If all writers (SWR/OWR) are in the public domain, then the total ownership shares for p | `APPENDIX_A_PERFORMANCE` |
-| trans 25 | TR | For each SPU publisher chain (but not OPUs), the sum of at least one of PR Ownership Sha | _gap_ |
-| trans 26 | TR | If an SPU record with publisher type “AQ” appears in a chain of title then the Ownership | _gap_ |
+| trans 25 | TR | For each SPU publisher chain (but not OPUs), the sum of at least one of PR Ownership Sha | `PARTY_CONSISTENCY` |
+| trans 26 | TR | If an SPU record with publisher type “AQ” appears in a chain of title then the Ownership | `CONDITIONAL_RECORDS` |
 | trans 27 | TR | For performing rights: Within each chain of title, the sum of Collection Shares for any  | `COLLECTION_TERRITORY` |
-| trans 39 | TR | If CWR Work Type is equal to “FM”, the transaction must include an ORN (Work Origin) rec | _gap_ |
+| trans 39 | TR | If CWR Work Type is equal to “FM”, the transaction must include an ORN (Work Origin) rec | `CONDITIONAL_RECORDS` |
 | trans 43 | TR | The sequence of records within the transaction must be as follows: NWR/REV/ISW/EXC, SPU, | `RECORD_ORDER` |
 | trans 44 | TR | For any territory and any right type the total controlled collection (SPT/SWT)and non-co | `COLLECTION_TERRITORY` |
-| trans 53 | TR | If Musical Work Distribution Category is equal to ‘SER’, the transaction must include an | _gap_ |
+| trans 53 | TR | If Musical Work Distribution Category is equal to ‘SER’, the transaction must include an | `CONDITIONAL_RECORDS` |
 
-### Publishers (§5.4, §5.5) — 25/37 covered
+### Publishers (§5.4, §5.5): 30/37 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -207,9 +187,9 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 4 | TR | If Record Type is equal to SPU or Publisher Unknown Indicator is not equal to “Y”, Publi | `MANDATORY_FIELD` |
 | field 5 | TR | If Record Type is equal to SPU, Publisher Type must be entered. | `MANDATORY_FIELD` |
 | field 6 | TR | If Publisher Type is entered in an SPU record, it must match an entry in the Publisher T | `PUBLISHER_ROLE` |
-| field 7 | TR | If Record Type is equal to SPU, Publisher Unknown Indicator must be blank. | _gap_ |
+| field 7 | TR | If Record Type is equal to SPU, Publisher Unknown Indicator must be blank. | `PARTY_CONSISTENCY` |
 | field 8 | FR | If Record Type is equal to OPU and Publisher Unknown Indicator is entered, it must be eq | `LOOKUP_CODE` |
-| field 9 | FR | If Record Type is equal to OPU and Publisher Unknown Indicator is equal to “Y”, Publishe | _gap_ |
+| field 9 | FR | If Record Type is equal to OPU and Publisher Unknown Indicator is equal to “Y”, Publishe | `PARTY_CONSISTENCY` |
 | field 10 | FR | If Publisher IPI Name # is entered, it must match a publisher entry in the IPI database. | _not evaluable_ |
 | field 11 | FR | If Submitter Agreement Number is entered, it must match the identifier for an agreement  | _not evaluable_ |
 | field 12 | FR | If entered, PR Affiliation Society # must match an entry in the Society Code table. | `LOOKUP_CODE` |
@@ -225,21 +205,21 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 24 | FR | If Publisher IPI Base Number is entered, it must match an entry in the IPI database. | _not evaluable_ |
 | field 25 | FR | If International Standard Agreement Code is entered, it must match an entry in the inter | _not evaluable_ |
 | field 26 | FR | If Society-Assigned Agreement Number is entered, it must match the identifier for an agr | _not evaluable_ |
-| field 27 | FR | If Record Type is “OPU”, Special Agreements Indicator can only be “L” or blank. | _gap_ |
-| field 28 | FR | If Record type is “OPU”, and Publisher type is invalid or missing, default to “E”. | _gap_ |
-| field 29 | TR | If the Publisher Name matches the name of a society in the Society Code table, and the P | _gap_ |
+| field 27 | FR | If Record Type is “OPU”, Special Agreements Indicator can only be “L” or blank. | `PARTY_CONSISTENCY` |
+| field 28 | FR | If Record type is “OPU”, and Publisher type is invalid or missing, default to “E”. | `CONDITIONAL_RECORDS` |
+| field 29 | TR | If the Publisher Name matches the name of a society in the Society Code table, and the P | _not evaluable_ |
 | field 30 | FR | If Agreement Type is entered, it must match an entry in the Agreement Type table. | `LOOKUP_CODE` |
 | field 31 | FR | If USA License Ind is entered, it must match a value in the USA License Indicator table. | `LOOKUP_CODE` |
 | field 32 | TR | If the role code is ‘AQ’, this SPU record must follow an SPU record with a role code of  | `PUBLISHER_CHAIN_ROLE` |
 | field 37 | TR | If entered, Publisher Name must contain only valid ASCII characters from within the “Nam | `CHARACTER_SET` |
-| field 40 | TR | If Record Type is equal to SPU and is the collecting publisher the Publisher IPI Name Nu | _gap_ |
+| field 40 | TR | If Record Type is equal to SPU and is the collecting publisher the Publisher IPI Name Nu | `PARTY_CONSISTENCY` |
 | recor 2 | TR | The first SPU record within a chain must be for an Original Publisher or Income Particip | `PUBLISHER_CHAIN_ROLE` |
 | recor 3 | TR | If Publisher Type is equal to “SE” or “AM” or “PA” or “ES”, Ownership Shares must be equ | `PUBLISHER_CHAIN_ROLE` |
 | recor 4 | TR | If Publisher Type is equal "AM", the publisher must have the right to administer for the | _not evaluable_ |
 | recor 5 | TR | Administrators and sub-publishers must be assigned the publisher sequence number belongi | `PWR_SEQ_MISMATCH` |
 | recor 8 | TR | If the record represents an Acquirer, at least one of PR Ownership share, MR Ownership s | `PUBLISHER_CHAIN_ROLE` |
 
-### Publisher territories (§5.7, §5.8) — 12/13 covered
+### Publisher territories (§5.7, §5.8): 13/13 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -252,21 +232,21 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 10 | TR | Inclusion/Exclusion Indicator must be entered and must be either “E” for excluded or “I” | `TERRITORY_IE_CONTRADICTION` |
 | field 11 | FR | If Shares change is entered, it must be set to “Y” or “N”. | `LOOKUP_CODE` |
 | field 12 | RR | Sequence # must be present. | `MANDATORY_FIELD` |
-| field 13 | RR | Sequence # must be 1 for the first SPT/OPT after an SPU/OPU, and increment by 1 for each | _gap_ |
+| field 13 | RR | Sequence # must be 1 for the first SPT/OPT after an SPU/OPU, and increment by 1 for each | `PARTY_CONSISTENCY` |
 | field 14 | TR | When entered, OPT records must follow an SPU, NPN, SPT, OPU or OPT record. | `RECORD_ORDER` |
 | recor 1 | TR | If the Inclusion/Exclusion Indicator is “I”, at least one of PR Collection Share, MR Col | `TERRITORY_RECORD` |
 | recor 5 | TR | Each Territory (TIS code) included on an SPT/OPT record can only be linked to one SPU/OP | `TERRITORY_RECORD` |
 
-### Writers (§5.9, §5.10) — 20/25 covered
+### Writers (§5.9, §5.10): 23/25 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
 | field 1 | TR | If Record Type is equal to SWR, Interested Party # must be entered. | `MANDATORY_FIELD` |
 | field 2 | TR | Submitters must ensure that the Interested Party # is unique within their system for bot | `PARTY_IP_BIJECTION` |
 | field 3 | TR | If Record Type is equal to SWR or Writer Unknown Indicator is not equal to “Y”, Writer L | `MANDATORY_FIELD` |
-| field 4 | TR | If Record Type is equal to SWR, Writer Unknown Indicator must be blank. | _gap_ |
+| field 4 | TR | If Record Type is equal to SWR, Writer Unknown Indicator must be blank. | `PARTY_CONSISTENCY` |
 | field 5 | FR | If Record Type is equal to OWR, and Writer Unknown Indicator is entered, it must be equa | `LOOKUP_CODE` |
-| field 6 | FR | If Record Type is equal to OWR, and Writer Unknown Indicator is equal to “Y”, Writer Las | _gap_ |
+| field 6 | FR | If Record Type is equal to OWR, and Writer Unknown Indicator is equal to “Y”, Writer Las | `PARTY_CONSISTENCY` |
 | field 7 | TR | For SWR records, Writer Designation Code must be entered. | `MANDATORY_FIELD` |
 | field 8 | TR | If entered, Writer Designation Code must match an entry in the Writer Designation table. | `WRITER_DESIGNATION` |
 | field 9 | FR | If entered, Writer IPI Name # must match a writer entry in the IPI database. | _not evaluable_ |
@@ -279,7 +259,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 16 | FR | If entered, Reversionary Indicator must be equal to Y, N, or U. | `LOOKUP_CODE` |
 | field 17 | FR | If entered, First Recording Refusal Ind must be equal to Y or N. | `LOOKUP_CODE` |
 | field 18 | FR | If entered, Work for Hire Indicator must be equal to ‘Y’ or ‘N’ | `LOOKUP_CODE` |
-| field 20 | TR | When Version equals “MOD”, if Writer Designation code equal “C” or “CA” or “A” and with  | _gap_ |
+| field 20 | TR | When Version equals “MOD”, if Writer Designation code equal “C” or “CA” or “A” and with  | `CONDITIONAL_RECORDS` |
 | field 21 | FR | If entered, Tax ID must be numeric. | `FIELD_FORMAT` |
 | field 22 | FR | If Writer IPI Base Number is entered, it must match an entry in the IPI database. | _not evaluable_ |
 | field 24 | FR | If USA License Ind is entered, it must match a value in the USA License Indicator table. | `LOOKUP_CODE` |
@@ -287,7 +267,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 30 | TR | If entered, Writer First Name must contain only valid ASCII characters from within the “ | `CHARACTER_SET` |
 | recor 2 | TR | Unless the total writers’ ownership shares is equal to 100% for each right (that is, the | `PWR_LINK_MISSING` |
 
-### Writer territories (§5.12, §5.13) — 15/16 covered
+### Writer territories (§5.12, §5.13): 16/16 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -300,7 +280,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 7 | TR | Inclusion/Exclusion Indicator must be entered and must be either “E” for excluded or “I” | `TERRITORY_IE_CONTRADICTION` |
 | field 8 | FR | If Shares change is entered, it must be set to “Y” or “N”. | `LOOKUP_CODE` |
 | field 9 | RR | Sequence # must be present. | `MANDATORY_FIELD` |
-| field 10 | RR | Sequence # must be 1 for the first SWT after an SWR and increment by 1 for each subseque | _gap_ |
+| field 10 | RR | Sequence # must be 1 for the first SWT after an SWR and increment by 1 for each subseque | `PARTY_CONSISTENCY` |
 | field 11 | TR | An OWT must follow an OWR, NWN, or OWT record. | `RECORD_ORDER` |
 | field 12 | TR | An OWT must not follow a SWR in a controlled chain. | `RECORD_ORDER` |
 | field 13 | TR | For an OWT record the Interested Party # must be equal to the Interested Party # on the  | `WRITER_TERRITORY_REQUIRED` |
@@ -308,7 +288,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | recor 2 | TR | Each Territory (TIS code) included on an SWT record can only be linked to one SWR for a  | `TERRITORY_RECORD` |
 | recor 3 | FR | If the Inclusion/Exclusion Indicator is “E”, all Collection Shares must be set to zero. | `TERRITORY_RECORD` |
 
-### Publisher for writer (§5.14) — 7/9 covered
+### Publisher for writer (§5.14): 7/9 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -322,7 +302,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 12 | TR | Publisher IP # must match the Interested Party # for the original publisher/income parti | `PWR_SEQ_MISMATCH` |
 | field 13 | FR | Publisher Name must match the name of the original publisher/income participant referenc | `PWR_SEQ_MISMATCH` |
 
-### Alternate titles (§5.15) — 6/6 covered
+### Alternate titles (§5.15): 6/6 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -333,7 +313,7 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 5 | RR | If the Title Type is equal to “OL” or “AL”, the Alternate Title must contain only valid  | `CHARACTER_SET` |
 | field 6 | RR | If the Title Type is equal to “OL” or “AL”, Language Code must be entered. | `RECORDING_IDENTIFIERS` |
 
-### Performing artists (§5.19) — 3/5 covered
+### Performing artists (§5.19): 3/5 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
@@ -343,18 +323,18 @@ Severities are the specification's: **ER** entire file, **GR** group, **TR** tra
 | field 4 | RR | Performing Artist Last Name must contain only valid ASCII characters from within the ‘Na | `CHARACTER_SET` |
 | field 5 | RR | If entered, Performing Artist First Name must contain only valid ASCII characters from w | `CHARACTER_SET` |
 
-### Recordings (§5.21) — 10/13 covered
+### Recordings (§5.21): 12/13 covered
 
 | Rule | Sev | Requirement | Implemented by |
 |---|---|---|---|
-| field 1 | RR | At least one of the optional fields must be entered. | _gap_ |
+| field 1 | RR | At least one of the optional fields must be entered. | `PARTY_CONSISTENCY` |
 | field 2 | FR | If entered, Release Date must be a valid date. | `FIELD_FORMAT` |
 | field 3 | FR | If entered, Release Duration must be a valid combination of hours, minutes, and seconds. | `FIELD_FORMAT` |
 | field 9 | FR | If entered, EAN must be a valid European Article Number of release. | `RECORDING_IDENTIFIERS` |
 | field 10 | FR | If entered, ISRC must be a valid International Standard Recording Code. | `RECORDING_IDENTIFIERS` |
 | field 11 | FR | If entered, Recording Format must be “A” for Audio or “V” for video. | `LOOKUP_CODE` |
 | field 12 | FR | If entered, Recording Technique must be “A” for analogue, “D” for digital or “U” for unk | `LOOKUP_CODE` |
-| field 14 | FR | If entered, the Media type must match an entry from the BIEM/CISAC list of Media Types. | _not evaluable_ |
+| field 14 | FR | If entered, the Media type must match an entry from the BIEM/CISAC list of Media Types. | `LOOKUP_CODE` |
 | field 15 | FR | If entered, the First Album Title must contain only valid ASCII characters from within t | `CHARACTER_SET` |
 | field 16 | TR | If entered, Recording Title must contain only valid ASCII characters from within the ‘Ti | `CHARACTER_SET` |
 | field 17 | TR | If entered, Version Title must contain only valid ASCII characters from within the ‘Titl | `CHARACTER_SET` |

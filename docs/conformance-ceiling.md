@@ -30,7 +30,7 @@ against tables that do ship. The numbers above come from the checked map.
 | Data | Rules | Why it cannot ship |
 |---|---:|---|
 | IPI database | 6 | Confirming a Name Number or Base Number exists and belongs to a publisher, writer or performer. Licensed CISAC data. |
-| CIS character set table | 11 | The permitted characters for names and titles. Not published with the specification. **Partially checked** — see below. |
+| CIS character set table | 11 | The permitted characters for names and titles. Not published with the specification. **Partially checked**: see below. |
 | CWR Sender ID and Codes Table | 3 | CWR06-1972, members-only. **Pluggable** via `setCwrSenderRegister`; unverifiable when absent. |
 | Society agreement registers | 5 | Whether an agreement number matches one on file with the acquiring society. |
 | BIEM/CISAC media type list | 1 | Permitted media types on a recording. |
@@ -61,8 +61,8 @@ A rule's severity is the specification's, not a judgement about how much the fie
 | ER | Entire file rejected | error |
 | GR | Group rejected | error |
 | TR | Transaction rejected | error |
-| RR | Record rejected — data the submitter meant to send is lost | error |
-| FR | Field rejected — the registration proceeds without it | warning |
+| RR | Record rejected: data the submitter meant to send is lost | error |
+| FR | Field rejected: the registration proceeds without it | warning |
 
 One deliberate exception. §5.7 record validation 1 (TR) requires an included territory to collect
 above zero, while the §5.7 prose on the same page permits an all-zero record "to record a
