@@ -7,6 +7,8 @@
 import type { CwrIssueCategory, CwrValidationResult } from './types';
 import { issueCount } from './types';
 import { groupByRule, CWR_REPORT_ORDER } from './group-by-rule';
+import { verdictLead } from './verdict';
+import type { CwrVerdictSummary } from './verdict';
 
 export const CWR_CATEGORY_LABEL: Record<CwrIssueCategory, string> = {
   // The 'overclaim' category covers both directions of a per-right total that isn't 100%: hence "Ownership".
@@ -23,24 +25,41 @@ export const CWR_CATEGORY_LABEL: Record<CwrIssueCategory, string> = {
   structure: 'Structure',
 };
 
-// The "how to fix" half of each category: one calm sentence, stated once above its group so a long
-// failure list stays actionable without repeating the same remedy on every row.
+// The "how to fix" half of each category: stated once above its group, so a long failure list stays
+// actionable and no remedy repeats on every row.
 //
-// These cite the standard rather than a destination. Every society validates against CWR19-1070;
-// naming one of them here would tell a reader that the rule is that society's preference, when it
-// is the specification's requirement. The destination belongs on the export action, not the verdict.
+// These cite the standard and not a destination. Every society validates against CWR19-1070. If we
+// named one society here, a reader could think that the rule is that society's preference, when the
+// rule is the specification's requirement. The destination belongs on the export action.
+//
+// Written to ASD-STE100 (Simplified Technical English): one topic per sentence, active voice, the
+// simple present tense, and a maximum of 25 words in a sentence. The readers are publishing
+// administrators and society staff, and English is not the first language of many of them. A rights
+// error is expensive, so the sentence that explains it must not also need decoding. Every
+// abbreviation here is in `glossary.ts`, and a test fails if one is not.
 export const CWR_CATEGORY_FIX: Record<CwrIssueCategory, string> = {
-  overclaim: 'Each right (PR / MR / SR) must total exactly 100% across all parties, within the ±0.06% the specification allows. Over 100% means two parties claim the same slice; under 100% means a co-writer or publisher is missing, so the work is under-registered and those royalties go uncollected.',
-  duplicate: 'A party is filed twice, or one identifier names two parties. An Interested Party # must identify exactly one party, and one party must carry exactly one number.',
-  territory: 'Collection in a territory exceeds 100%, so rights overlap or are over-claimed for that region. Make the TIS coverage disjoint.',
-  link: 'Every controlled writer must link to a publisher through a PWR record, and that link must point at a real publisher chain in the work.',
-  count: 'The GRT and TRL trailers must report exactly the records and transactions they frame. A file whose counts disagree is rejected on the trailer.',
-  ordering: 'Records must follow CWR order within a work: NWR → publishers → writers → alternate titles → recording.',
-  mandatory: 'A field the specification marks mandatory is missing: a work title, a writer’s last name, a publisher name.',
-  field: 'A field’s format is invalid, such as an IPI Name Number that is not 9 to 11 digits.',
-  sequence: 'Transaction and record sequence numbers must increase in order, starting at zero, without gaps or duplicates.',
-  header: 'The transmission header identifies the submitter. Its rules are the most severe in the specification: a file that breaks one is rejected in full before any work is read, which is why it comes back with no acknowledgement.',
-  structure: 'The file’s structure is wrong: either a record is not the width its record type specifies, or a record the specification requires is absent. Records are fixed-width and framed HDR → GRH → GRT → TRL, and a controlled party needs its territory and link records.',
+  overclaim:
+    'Each right must have a total of exactly 100% from all parties. The three rights are PR, MR and SR. The specification permits a tolerance of 0.06%. A total of more than 100% shows that two parties claim the same share. A total of less than 100% shows that a writer or a publisher is not in the file. The society cannot pay the royalties for that share.',
+  duplicate:
+    'The file records one party two times, or one number identifies two different parties. Each IPI number must identify only one party. Each party must have only one IPI number.',
+  territory:
+    'The collection shares for a territory have a total of more than 100%. Two parties claim the same territory. Change the TIS codes, and give each party a different territory.',
+  link:
+    'Each writer that you represent must connect to a publisher. A PWR record makes this connection. The PWR record must point to a publisher that is also in the same work.',
+  count:
+    'The GRT record and the TRL record give a count of the records before them. These counts must agree with the file. If a count does not agree, the society refuses the file at that trailer.',
+  ordering:
+    'The records of a work must be in the sequence that CWR specifies. The sequence is: NWR first, then the publishers, then the writers, then the alternate titles, then the recording.',
+  mandatory:
+    'A field that the specification makes mandatory is empty. Examples are the title of the work, the last name of a writer, and the name of a publisher. Put a value in each mandatory field.',
+  field:
+    'A field has a value in the wrong format. For example, an IPNN must have 9 to 11 digits. Correct the value, and keep the format that the specification gives for that field.',
+  sequence:
+    'Each work and each record has a sequence number. These numbers start at zero. Each number must be one more than the number before it. Do not leave a gap, and do not use a number two times.',
+  header:
+    'The HDR record identifies you as the sender. Its rules are the most severe rules in the specification. If the HDR record is wrong, the society refuses the file before it reads a work. The society then sends no acknowledgement, because it read no work to report on.',
+  structure:
+    'The file has the wrong shape. Each record must have the width that the specification gives for its record type. The envelope must be in this sequence: HDR, GRH, GRT, TRL. Each party that you represent must also have its territory record and its link record.',
 };
 
 export interface CwrReportMeta {
@@ -51,6 +70,44 @@ export interface CwrReportMeta {
 }
 
 const rule = (char: string, n = 78) => char.repeat(n);
+
+/**
+ * The stored verdict as text, for handing to whoever produced the file.
+ *
+ * Not the same artefact as `formatCwrReport`, and it must not pretend to be: the history keeps the
+ * verdict and the counts, never the findings, so this carries no line numbers and no offending
+ * values. It says so at the end, because a summary that reads as a full report sends someone to
+ * the wrong argument with the wrong evidence.
+ */
+export function formatVerdictSummary(summary: CwrVerdictSummary, meta: CwrReportMeta): string {
+  const out: string[] = ['CWR validation summary', rule('=')];
+  out.push(`Source     ${meta.source}`);
+  if (meta.at) out.push(`Validated  ${meta.at}`);
+  out.push(`Contents   ${summary.works.toLocaleString()} works`);
+  out.push('Standard   CISAC CWR19-1070 (CWR 2.2)');
+  out.push('');
+  out.push(`VERDICT    ${summary.errors.toLocaleString()} error(s) · ${summary.warnings.toLocaleString()} warning(s)`);
+  out.push('');
+  out.push(verdictLead(summary));
+
+  for (const c of summary.categories) {
+    out.push('');
+    const counts = [c.errors > 0 ? `${c.errors.toLocaleString()} blocking` : '', c.warnings > 0 ? `${c.warnings.toLocaleString()} warning(s)` : '']
+      .filter(Boolean)
+      .join(' · ');
+    out.push(`${CWR_CATEGORY_LABEL[c.category].toUpperCase()} (${counts})`);
+    out.push(rule('-'));
+    out.push(`  ${CWR_CATEGORY_FIX[c.category]}`);
+  }
+
+  out.push('');
+  out.push(rule('-'));
+  out.push('This is the summary, and not the full report. It gives no line numbers and no field');
+  out.push('values. Validate the file again to get the full report.');
+  out.push('');
+  return out.join('\n');
+}
+
 
 /**
  * Render a validation result as plain text, complete and untruncated.

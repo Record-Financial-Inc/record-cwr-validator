@@ -40,8 +40,18 @@ export type {
  */
 export { groupByRule, CWR_REPORT_ORDER } from './validate/group-by-rule';
 export type { RuleGroup, RuleInstance } from './validate/group-by-rule';
-export { formatCwrReport, CWR_CATEGORY_LABEL, CWR_CATEGORY_FIX } from './validate/format-report';
+export { formatCwrReport, formatVerdictSummary, CWR_CATEGORY_LABEL, CWR_CATEGORY_FIX } from './validate/format-report';
 export type { CwrReportMeta } from './validate/format-report';
+
+// The verdict: what happens to the file, and the category breakdown behind it. Without these the
+// files are copied in but unreachable, and a consumer gets the findings with no way to ask what
+// they mean for the submission.
+export { summariseValidation, verdictLead } from './validate/verdict';
+export type { CwrVerdictSummary, CwrVerdictCategory } from './validate/verdict';
+
+// The abbreviations the findings use, so a consumer can expand them rather than ship a code table.
+export { CWR_GLOSSARY, cwrTerm, splitTerms } from './validate/glossary';
+export type { CwrTerm, CwrTermKey } from './validate/glossary';
 
 export { ALL_RULES, FILE_RULE_LIST, TX_RULE_LIST } from './validate/registry';
 

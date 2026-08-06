@@ -14,6 +14,20 @@ import { isValidCode } from '../lookup/tables';
 
 const ENVELOPE_HEADS = new Set(['HDR', 'GRH', 'GRT', 'TRL']);
 
+/**
+ * Datatypes that are never data: intentional spacers and the record type itself. A blank one is the
+ * file doing what the specification asks, not a field somebody forgot.
+ */
+const NOT_DATA = new Set(['blank', 'record_type']);
+
+/**
+ * Fields whose absence a dedicated rule already reports, in its own words.
+ *
+ * HEADER_SENDER_ID says the submitter cannot be identified, which is the consequence, and a second
+ * generic "is required but missing" beside it reads as two defects rather than one.
+ */
+const REPORTED_ELSEWHERE = new Set(['sender_id']);
+
 export const envelopeFieldRule: FileRule = {
   id: 'ENVELOPE_FIELD',
   category: 'field',
@@ -26,7 +40,18 @@ export const envelopeFieldRule: FileRule = {
       const rec = extractRecord(r.raw);
       if (!rec) continue;
       for (const ef of rec.fields.values()) {
-        if (!ef.value) continue;
+        if (!ef.value) {
+          // The presence half. Until this, exactly one mandatory envelope field was checked for
+          // presence (the Sender ID, by hand), so the submitter's name, the creation date, the CWR
+          // version and every trailer count could all be blank and the file still returned ok.
+          // ENVELOPE_FIELD skips an empty value below because its other job is the shape of a value
+          // that IS there; MANDATORY_FIELD does presence but is a TxRule and never reaches the
+          // envelope. The gap was not a missing check so much as nobody owning it.
+          if (ef.spec.presence === 'M' && !NOT_DATA.has(ef.spec.datatype) && !REPORTED_ELSEWHERE.has(ef.spec.key)) {
+            out.push(ctx.issue('error', 'mandatory', `${ef.spec.name} (${rec.head}) is required but missing.`, [r.line]));
+          }
+          continue;
+        }
         if (FORMAT_DATATYPES.has(ef.spec.datatype)) {
           const reason = checkDatatype(ef.spec.datatype, ef.value);
           if (reason) out.push(ctx.issue('error', 'field', `${ef.spec.name} (${rec.head}) "${ef.value}" ${reason}.`, [r.line]));

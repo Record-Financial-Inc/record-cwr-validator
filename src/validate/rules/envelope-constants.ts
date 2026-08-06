@@ -55,11 +55,12 @@ export const envelopeConstantRule: FileRule = {
 
     const hdr = records.find((r) => r.type === 'HDR');
     if (hdr) {
-      // An absent value is a missing mandatory field, which MANDATORY_FIELD owns. This rule judges
-      // only a value that is present, so one defect is never reported twice.
+      // An absent value is a missing mandatory field, which ENVELOPE_FIELD owns (MANDATORY_FIELD is
+      // a TxRule and never reaches the envelope). This rule judges only a value that is present, so
+      // one defect is never reported twice.
       const edi = field(hdr.raw, 'edi_standard');
       if (edi && edi !== EDI_STANDARD) {
-        out.push(ctx.issue('error', 'header', `EDI Standard Version Number is "${edi}", but must be the constant "${EDI_STANDARD}" (CWR19-1070 §3.5 p14 field validation 9, ER: entire file rejected).`, [hdr.line]));
+        out.push(ctx.issue('error', 'header', `EDI Standard Version is "${edi}", but must be the constant "${EDI_STANDARD}" (CWR19-1070 §3.5 p14 field validation 9, ER: entire file rejected).`, [hdr.line]));
       }
       const version = field(hdr.raw, 'cwr_version');
       if (version && version !== CWR_VERSION) {
