@@ -87,7 +87,7 @@ export const senderRegisterRule: FileRule = {
       if (!code) {
         out.push(ctx.issue('error', 'header', 'Sender Type is "SO" but Sender ID is empty. A society sender must give its society code (CWR19-1070 §3.5 p14 field validation 4, ER: entire file rejected).', [hdr.line]));
       } else if (!SOCIETY_CODES.has(code)) {
-        out.push(ctx.issue('warning', 'header', `Sender Type is "SO" but Sender ID "${senderId.trim()}" is not a society code we hold. §3.5 p14 field validation 4 requires it to match the Society Code Table at ER severity; our copy of that table is a CWR 2.1-era snapshot, so this is reported rather than asserted.`, [hdr.line]));
+        out.push(ctx.issue('warning', 'header', `Sender Type is "SO" but Sender ID "${senderId.trim()}" is not a society code we hold. §3.5 p14 field validation 4 requires it to match the Society Code Table at ER severity; our copy of that table is a CWR 2.1-era snapshot, so this is reported rather than asserted.`, [hdr.line], 'ER'));
       }
       return out;
     }
@@ -101,7 +101,7 @@ export const senderRegisterRule: FileRule = {
         out.push(ctx.issue('error', 'header', `Sender Type is "AA" but Sender ID "${senderId.trim()}" is not an IPI Name Number, which is 9 to 11 digits. An administrative agency files under the IPI of the publisher it acts for (CWR19-1070 §3.5 p14 field validation 7, ER: entire file rejected).`, [hdr.line]));
       } else {
         out.push({
-          ...ctx.issue('warning', 'header', `Sender Type is "AA", so §3.5 p14 field validation 7 requires Sender ID "${senderId.trim()}" to be the IPI Name Number of the publisher this agency acts for. Which publisher that is cannot be determined from the file, so the identifier's shape is all that was checked.`, [hdr.line]),
+          ...ctx.issue('warning', 'header', `Sender Type is "AA", so §3.5 p14 field validation 7 requires Sender ID "${senderId.trim()}" to be the IPI Name Number of the publisher this agency acts for. Which publisher that is cannot be determined from the file, so the identifier's shape is all that was checked.`, [hdr.line], 'ER'),
           unverified: true,
         });
       }
@@ -117,7 +117,7 @@ export const senderRegisterRule: FileRule = {
       // defects we actually found: or, worse, letting a file pass as fully conformant when the
       // one rule that silently sinks files at the header was never evaluated.
       out.push({
-        ...ctx.issue('warning', 'header', `Sender identity "${claimed}" could not be verified: the CWR Sender ID and Codes Table (CWR06-1972) was not supplied. §3.5 p14 field validations 3 and 12 require it to match a registered entry, at ER severity: a file failing them is rejected in full at the header, before any transaction is read.`, [hdr.line]),
+        ...ctx.issue('warning', 'header', `Sender identity "${claimed}" could not be verified: the CWR Sender ID and Codes Table (CWR06-1972) was not supplied. §3.5 p14 field validations 3 and 12 require it to match a registered entry, at ER severity: a file failing them is rejected in full at the header, before any transaction is read.`, [hdr.line], 'ER'),
         unverified: true,
       });
       return out;

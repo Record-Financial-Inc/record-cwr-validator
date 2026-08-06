@@ -28,12 +28,12 @@ export const txSequenceRule: FileRule = {
       if (prev === null) {
         // The first transaction in the group must be sequence 0 (CWR transaction sequence is 0-based).
         if (w.txSeq !== 0) {
-          out.push(ctx.issue('error', 'sequence', `First transaction sequence is ${w.txSeq}: NWR sequence numbers must start at 0.`, [w.line]));
+          out.push(ctx.issue('error', 'sequence', `First transaction sequence is ${w.txSeq}: NWR sequence numbers must start at 0.`, [w.line], 'TR'));
         }
       } else if (w.txSeq <= prev) {
-        out.push(ctx.issue('error', 'sequence', `Transaction sequence ${w.txSeq} does not increase past the previous (${prev}): NWR sequence numbers must be ordered and unique.`, [w.line]));
+        out.push(ctx.issue('error', 'sequence', `Transaction sequence ${w.txSeq} does not increase past the previous (${prev}): NWR sequence numbers must be ordered and unique.`, [w.line], 'TR'));
       } else if (w.txSeq !== prev + 1) {
-        out.push(ctx.issue('error', 'sequence', `Transaction sequence jumps from ${prev} to ${w.txSeq}: NWR sequence numbers must be contiguous (no gaps).`, [w.line]));
+        out.push(ctx.issue('error', 'sequence', `Transaction sequence jumps from ${prev} to ${w.txSeq}: NWR sequence numbers must be contiguous (no gaps).`, [w.line], 'TR'));
       }
       prev = w.txSeq;
     }
@@ -58,12 +58,12 @@ export const recordSequenceRule: TxRule = {
       if (Number.isNaN(rs)) continue; // records without a parseable seq (e.g. crafted test records)
       if (prev === null) {
         if (rs !== 0) {
-          out.push(ctx.issue('error', 'sequence', `First record sequence is ${rs}: record sequence numbers must start at 0 within the work.`, [r.line]));
+          out.push(ctx.issue('error', 'sequence', `First record sequence is ${rs}: record sequence numbers must start at 0 within the work.`, [r.line], 'TR'));
         }
       } else if (rs <= prev) {
-        out.push(ctx.issue('error', 'sequence', `Record sequence ${rs} does not increase past the previous (${prev}) within the work.`, [r.line]));
+        out.push(ctx.issue('error', 'sequence', `Record sequence ${rs} does not increase past the previous (${prev}) within the work.`, [r.line], 'TR'));
       } else if (rs !== prev + 1) {
-        out.push(ctx.issue('error', 'sequence', `Record sequence jumps from ${prev} to ${rs}: record sequence numbers must be contiguous (no gaps) within the work.`, [r.line]));
+        out.push(ctx.issue('error', 'sequence', `Record sequence jumps from ${prev} to ${rs}: record sequence numbers must be contiguous (no gaps) within the work.`, [r.line], 'TR'));
       }
       prev = rs;
     }

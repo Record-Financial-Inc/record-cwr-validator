@@ -14,7 +14,7 @@ export const mandatoryRule: TxRule = {
   run(ctx) {
     const out: CwrIssue[] = [];
     const miss = (cond: boolean, what: string, line: number) => {
-      if (cond) out.push(ctx.issue('error', 'mandatory', `${what} is required but missing.`, [line]));
+      if (cond) out.push(ctx.issue('error', 'mandatory', `${what} is required but missing.`, [line], 'TR'));
     };
     for (const r of ctx.readable) {
       if (isWork(r)) {

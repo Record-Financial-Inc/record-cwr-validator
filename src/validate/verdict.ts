@@ -18,20 +18,19 @@ import { issueCount } from './types';
  * Does this finding mean the society refuses the ENTIRE file?
  *
  * "Rejected before any work is read, with no acknowledgement" is the most alarming sentence this
- * product prints, and it is true only of the ER-graded validations. The grade is not the category:
- * `header` covers both the ER envelope rules (§3.4-§3.6 framing, the sender identity) AND the
- * GR-graded group rules in ENVELOPE_CONSTANTS (GRH Version Number, a GRT Group ID that does not
- * match its GRH, a transaction type used by two groups). A GR defect refuses one GROUP: the file is
- * read, and a group rejection is not the no-acknowledgement case. Classifying by category alone
- * printed the header sentence over all five of them.
+ * product prints, and it is true only of the ER-graded validations. The grade is NOT the category:
+ * `header` covers both the ER envelope rules and the GR-graded group rules in ENVELOPE_CONSTANTS
+ * (GRH Version Number, a GRT Group ID that does not match its GRH, a transaction type used by two
+ * groups). A GR defect refuses one GROUP: the file is read, and a group rejection is not the
+ * no-acknowledgement case.
  *
- * The grade is read from the citation the message already carries, which this engine writes in a
- * fixed shape ("… field validation 3, ER: entire file rejected"). That is the same structured
- * suffix `group-by-rule.ts` splits off to state a rule once, so it is a format we control rather
- * than prose we are guessing at. A finding with no citation, or one we cannot grade, is NOT treated
- * as fatal: under-claiming sends nobody hunting a header defect that does not exist.
+ * The grade is now a typed field on the finding, set by the rule or read from its citation in one
+ * place. This used to match a regular expression against the message text, which graded only the
+ * findings that happened to carry a citation and silently treated the rest as harmless.
+ *
+ * A finding with no grade is NOT fatal. Under-claiming sends nobody hunting a header defect that
+ * does not exist.
  */
-const ENTIRE_FILE_REJECTED = /\bER: entire file rejected/;
 
 /** One category's contribution to a verdict. Labels and remedies are re-derived, never stored. */
 export interface CwrVerdictCategory {
@@ -69,7 +68,7 @@ export interface CwrVerdictSummary {
 /** Raised against the file rather than against a work (invariant I2: file-scoped issues carry null). */
 const isFileScoped = (issue: CwrIssue) => issue.txSeq == null;
 
-const isFileFatal = (issue: CwrIssue) => isFileScoped(issue) && ENTIRE_FILE_REJECTED.test(issue.message);
+const isFileFatal = (issue: CwrIssue) => isFileScoped(issue) && issue.grade === 'ER';
 
 /** Distinct works carrying at least one of these findings. */
 function worksAffected(issues: readonly CwrIssue[]): number {

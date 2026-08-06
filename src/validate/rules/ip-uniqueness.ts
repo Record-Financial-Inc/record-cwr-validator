@@ -21,7 +21,7 @@ export const ipUniqueRule: TxRule = {
       if (!r.ip) continue; // blank IPs can't be de-duplicated
       const prev = seen.get(r.ip);
       if (prev !== undefined) {
-        out.push(ctx.issue('error', 'duplicate', `Interested-party # "${r.ip}" is used by two parties in the work: each publisher/writer needs a distinct IP.`, [prev, r.line]));
+        out.push(ctx.issue('error', 'duplicate', `Interested-party # "${r.ip}" is used by two parties in the work: each publisher/writer needs a distinct IP.`, [prev, r.line], 'TR'));
       } else {
         seen.set(r.ip, r.line);
       }

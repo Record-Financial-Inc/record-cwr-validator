@@ -18,7 +18,7 @@ export const publisherRoleRule: TxRule = {
     for (const r of ctx.readable) {
       if (!isPublisher(r)) continue;
       if (r.role && !PUBLISHER_ROLES.has(r.role)) {
-        out.push(ctx.issue('error', 'field', `Publisher role "${r.role}" is not a valid CWR code (E, AM, SE, PA, ES, AQ).`, [r.line]));
+        out.push(ctx.issue('error', 'field', `Publisher role "${r.role}" is not a valid CWR code (E, AM, SE, PA, ES, AQ).`, [r.line], 'TR'));
       }
     }
     return out;
@@ -38,10 +38,10 @@ export const writerDesignationRule: TxRule = {
       if (!r.designation) {
         // The designation is mandatory on a controlled writer (SWR); an uncontrolled OWR may omit it.
         if (r.type === 'SWR') {
-          out.push(ctx.issue('error', 'field', 'Writer designation is required on a controlled writer (SWR) but is missing.', [r.line]));
+          out.push(ctx.issue('error', 'field', 'Writer designation is required on a controlled writer (SWR) but is missing.', [r.line], 'TR'));
         }
       } else if (!WRITER_DESIGNATIONS.has(r.designation)) {
-        out.push(ctx.issue('error', 'field', `Writer designation "${r.designation}" is not a valid CWR code (CA, C, A, AR, AD, SR, SA, TR).`, [r.line]));
+        out.push(ctx.issue('error', 'field', `Writer designation "${r.designation}" is not a valid CWR code (CA, C, A, AR, AD, SR, SA, TR).`, [r.line], 'TR'));
       }
     }
     return out;
@@ -63,7 +63,7 @@ export const eBeforeAmRule: TxRule = {
       if (r.role === 'E') {
         seenE.add(r.publisherSeq);
       } else if (r.role === 'AM' && !seenE.has(r.publisherSeq)) {
-        out.push(ctx.issue('error', 'ordering', `Administrator (AM) in chain ${r.publisherSeq} appears before its original publisher (E).`, [r.line]));
+        out.push(ctx.issue('error', 'ordering', `Administrator (AM) in chain ${r.publisherSeq} appears before its original publisher (E).`, [r.line], 'TR'));
       }
     }
     return out;

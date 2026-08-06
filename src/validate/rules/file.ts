@@ -24,7 +24,7 @@ export const framingRule: FileRule = {
     const out: CwrIssue[] = [];
     const { records, parsed } = ctx;
     if (records.length === 0) {
-      out.push(ctx.issue('error', 'structure', 'File is empty and has no HDR transmission header.', []));
+      out.push(ctx.issue('error', 'structure', 'File is empty and has no HDR transmission header.', [], 'ER'));
       return out;
     }
     // Framing defects group by (record type, actual width). A file padded to a universal width
@@ -49,6 +49,9 @@ export const framingRule: FileRule = {
           'structure',
           `${g.type}: ${n} record${n === 1 ? ' is' : 's are'} ${g.actual} characters, expected ${g.expected} (CWR19-1070 ${SPEC_REF[g.type] ?? 'record format'}). Field positions after the 19-character prefix do not line up, so this record's fields cannot be read.`,
           g.lines.slice(0, 5),
+          // §2.1 field validation 9 grades the record length ER, but societies ingest right-trimmed
+          // records in practice. The record is what cannot be read, so RR is what is true of it.
+          'RR',
         ));
       }
       // Never skip silently: say how much of the file went unchecked, and why.
@@ -58,32 +61,34 @@ export const framingRule: FileRule = {
         'structure',
         `${malformed.size} of ${records.length} records could not be read because their framing is broken, so field-level checks were skipped for them. ${readable} record${readable === 1 ? ' was' : 's were'} checked in full. Fix the record widths and validate again.`,
         [],
+        // A coverage statement about records, not a defect in the transmission envelope.
+        'RR',
       ));
     }
     if (records[0].type !== 'HDR') {
-      out.push(ctx.issue('error', 'structure', 'File does not start with an HDR transmission header.', [records[0].line]));
+      out.push(ctx.issue('error', 'structure', 'File does not start with an HDR transmission header.', [records[0].line], 'ER'));
     }
     const grhRecords = records.filter((r) => r.type === 'GRH');
     if (grhRecords.length === 0) {
-      out.push(ctx.issue('error', 'structure', 'Missing GRH group header immediately after HDR.', [records[0].line]));
+      out.push(ctx.issue('error', 'structure', 'Missing GRH group header immediately after HDR.', [records[0].line], 'ER'));
     } else if (grhRecords.length > 1) {
-      out.push(ctx.issue('error', 'structure', 'File contains multiple GRH group headers, but this export profile supports one NWR group.', grhRecords.map((r) => r.line)));
+      out.push(ctx.issue('error', 'structure', 'File contains multiple GRH group headers, but this export profile supports one NWR group.', grhRecords.map((r) => r.line), 'ER'));
     }
     if (records[1]?.type !== 'GRH') {
-      out.push(ctx.issue('error', 'structure', 'GRH group header must appear immediately after HDR.', [records[1]?.line ?? records[0].line]));
+      out.push(ctx.issue('error', 'structure', 'GRH group header must appear immediately after HDR.', [records[1]?.line ?? records[0].line], 'ER'));
     }
     // TRL (transmission) and GRT (group) trailers are MANDATORY. A file missing either has a
     // truncated envelope: it would pass our gate and ship to a society/the PRO, which rejects it. So a
     // missing trailer blocks (error), not warns, and validateCwr returns ok: false.
     const last = records[records.length - 1];
     if (last.type !== 'TRL') {
-      out.push(ctx.issue('error', 'structure', 'File does not end with a TRL transmission trailer. The transmission envelope is truncated (CWR19-1070 §3.8 p17; TRL field validations are ER, entire file rejected).', [last.line]));
+      out.push(ctx.issue('error', 'structure', 'File does not end with a TRL transmission trailer. The transmission envelope is truncated (CWR19-1070 §3.8 p17; TRL field validations are ER, entire file rejected).', [last.line], 'ER'));
     }
     // The GRT sits immediately before the TRL (or is the last record when the TRL is missing). Checked
     // independently of the TRL so a file missing BOTH trailers reports both, not just one.
     const beforeTrl = records[last.type === 'TRL' ? records.length - 2 : records.length - 1];
     if (beforeTrl && beforeTrl.type !== 'GRT') {
-      out.push(ctx.issue('error', 'structure', 'Missing GRT group trailer before the TRL. The group envelope is truncated (CWR19-1070 §3.7 p17; GRT field validations are GR, group rejected).', [beforeTrl.line]));
+      out.push(ctx.issue('error', 'structure', 'Missing GRT group trailer before the TRL. The group envelope is truncated (CWR19-1070 §3.7 p17; GRT field validations are GR, group rejected).', [beforeTrl.line], 'GR'));
     }
     return out;
   },

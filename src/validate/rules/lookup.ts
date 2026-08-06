@@ -29,7 +29,7 @@ export const lookupCodeRule: TxRule = {
         if (!src || COVERED_ELSEWHERE.has(src)) continue;
         if (!ef.value) continue; // blank: presence is the field rule's job, not the lookup's
         if (isValidCode(src, ef.value) === false) {
-          out.push(ctx.issue('warning', 'field', `${ef.spec.name} "${ef.value}" is not a recognised CWR code.`, [r.line]));
+          out.push(ctx.issue('warning', 'field', `${ef.spec.name} "${ef.value}" is not a recognised CWR code.`, [r.line], 'FR'));
         }
       }
     }

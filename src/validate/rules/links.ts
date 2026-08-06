@@ -45,7 +45,7 @@ export const pwrLinkMissingRule: TxRule = {
       if (swr.type !== 'SWR') continue; // controlled writers only (OWR are uncontrolled)
       const linked = pwrs.some((p) => p.writerIp === swr.ip);
       if (!linked) {
-        out.push(ctx.issue('warning', 'link', `Controlled writer "${swr.lastName || swr.ip}" has no PWR record linking it to a publisher (CWR19-1070 §5.9 p47 record validation 2; §5.14 p52).`, [swr.line]));
+        out.push(ctx.issue('warning', 'link', `Controlled writer "${swr.lastName || swr.ip}" has no PWR record linking it to a publisher (CWR19-1070 §5.9 p47 record validation 2; §5.14 p52).`, [swr.line], 'TR'));
       }
     }
     return out;
@@ -80,7 +80,7 @@ export const pwrSeqMismatchRule: TxRule = {
         out.push(ctx.issue('error', 'link', `PWR Publisher IP "${record.publisherIp}" does not match publisher sequence ${record.publisherSeq} IP "${publisher.ip}" (CWR19-1070 §5.14 p52 field validations 9 and 12, TR: transaction rejected).`, [record.line, publisher.line]));
       }
       if ((controlledWriterLink || record.publisherName) && normaliseName(record.publisherName) !== normaliseName(publisher.name)) {
-        out.push(ctx.issue('error', 'link', `PWR Publisher Name "${record.publisherName}" does not match publisher sequence ${record.publisherSeq} name "${publisher.name}" (CWR19-1070 §5.14 p52 field validations 10 and 13).`, [record.line, publisher.line]));
+        out.push(ctx.issue('error', 'link', `PWR Publisher Name "${record.publisherName}" does not match publisher sequence ${record.publisherSeq} name "${publisher.name}" (CWR19-1070 §5.14 p52 field validations 10 and 13).`, [record.line, publisher.line], 'TR'));
       }
       if (currentWriter && (controlledWriterLink || record.writerIp) && record.writerIp !== currentWriter.ip) {
         out.push(ctx.issue('error', 'link', `PWR Writer IP "${record.writerIp}" does not match the current writer IP "${currentWriter.ip}" (CWR19-1070 §5.14 p52 field validations 8 and 11, TR: transaction rejected).`, [record.line, currentWriter.line]));

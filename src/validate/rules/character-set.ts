@@ -79,7 +79,7 @@ export const characterSetRule: TxRule = {
         const value = record.fields.get(key)?.value;
         if (!value || !NON_PRINTABLE_ASCII.test(value)) continue;
         NON_PRINTABLE_ASCII.lastIndex = 0;
-        out.push(ctx.issue(severity, 'field', `${label} contains ${offenders(value)}, which is outside printable ASCII and so outside the CIS character set (CWR19-1070 ${cite}). The CIS table is not published with the specification, so this checks the printable-ASCII superset: what it flags is certainly invalid, and it cannot see ASCII characters that fall outside the CIS subset.`, [r.line]));
+        out.push(ctx.issue(severity, 'field', `${label} contains ${offenders(value)}, which is outside printable ASCII and so outside the CIS character set (CWR19-1070 ${cite}). The CIS table is not published with the specification, so this checks the printable-ASCII superset: what it flags is certainly invalid, and it cannot see ASCII characters that fall outside the CIS subset.`, [r.line], 'FR'));
       }
     }
     return out;

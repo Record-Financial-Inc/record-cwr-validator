@@ -97,7 +97,7 @@ export const recordPrefixRule: FileRule = {
     }
     for (const [type, g] of short) {
       const width = g.min === g.max ? `${g.min} characters` : `between ${g.min} and ${g.max} characters`;
-      out.push(ctx.issue('warning', 'structure', `${type}: ${g.count} record${g.count === 1 ? ' stops' : 's stop'} short at ${width}, against a specified ${g.expected}. CWR19-1070 §2.1 p9 field validation 9 requires the length to match, at ER (entire file rejected); trailing optional fields are widely right-trimmed in practice and generally ingested, so this is reported rather than blocked.`, g.lines));
+      out.push(ctx.issue('warning', 'structure', `${type}: ${g.count} record${g.count === 1 ? ' stops' : 's stop'} short at ${width}, against a specified ${g.expected}. CWR19-1070 §2.1 p9 field validation 9 requires the length to match, at ER (entire file rejected); trailing optional fields are widely right-trimmed in practice and generally ingested, so this is reported rather than blocked.`, g.lines, 'RR'));
     }
 
     return out;

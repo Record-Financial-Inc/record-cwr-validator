@@ -33,7 +33,7 @@ export const territoryIeContradictionRule: TxRule = {
     for (const byTis of byIp.values()) {
       for (const [tis, entry] of byTis) {
         if (entry.indicators.has('I') && entry.indicators.has('E')) {
-          out.push(ctx.issue('error', 'territory', `Territory ${tis} is both included and excluded for the same party: contradictory/overlapping territory scope.`, entry.lines));
+          out.push(ctx.issue('error', 'territory', `Territory ${tis} is both included and excluded for the same party: contradictory/overlapping territory scope.`, entry.lines, 'TR'));
         }
       }
     }

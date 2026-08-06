@@ -60,11 +60,11 @@ export const fieldFormatRule: TxRule = {
         if (!FORMAT_DATATYPES.has(ef.spec.datatype)) continue;
         const reason = checkDatatype(ef.spec.datatype, ef.value);
         if (reason) {
-          out.push(ctx.issue('error', 'field', `${ef.spec.name} "${ef.value}" ${reason}.`, [r.line]));
+          out.push(ctx.issue('error', 'field', `${ef.spec.name} "${ef.value}" ${reason}.`, [r.line], 'FR'));
         }
         const rangeIssue = shareRangeIssue(rec.head, ef.spec.key, ef.value);
         if (rangeIssue) {
-          out.push(ctx.issue('error', 'field', `${ef.spec.name} "${ef.value}" ${rangeIssue}.`, [r.line]));
+          out.push(ctx.issue('error', 'field', `${ef.spec.name} "${ef.value}" ${rangeIssue}.`, [r.line], 'FR'));
         }
       }
     }

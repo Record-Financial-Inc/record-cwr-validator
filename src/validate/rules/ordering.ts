@@ -36,29 +36,29 @@ export const recordOrderRule: TxRule = {
     for (const r of ctx.records) {
       const rank = rankOf(r);
       if (rank < prevRank && prev) {
-        out.push(ctx.issue('error', 'ordering', `Record ${r.type} is out of CWR order: it appears after ${prev.type}.`, [r.line]));
+        out.push(ctx.issue('error', 'ordering', `Record ${r.type} is out of CWR order: it appears after ${prev.type}.`, [r.line], 'TR'));
       }
 
       if (isPubTerr(r) && r.ip && !seenPublisherIps.has(r.ip)) {
-        out.push(ctx.issue('error', 'ordering', `Record ${r.type} appears before its publisher record.`, [r.line]));
+        out.push(ctx.issue('error', 'ordering', `Record ${r.type} appears before its publisher record.`, [r.line], 'TR'));
       }
       if (isPubTerr(r) && r.type === 'SPT') {
         if (prev && prev.type !== 'SPU' && prev.type !== 'SPT') {
-          out.push(ctx.issue('error', 'ordering', `Record SPT must follow an SPU or SPT, but it appears after ${prev.type}.`, [r.line]));
+          out.push(ctx.issue('error', 'ordering', `Record SPT must follow an SPU or SPT, but it appears after ${prev.type}.`, [r.line], 'TR'));
         }
         if (r.ip && !seenControlledPublisherIps.has(r.ip)) {
-          out.push(ctx.issue('error', 'ordering', 'Record SPT cannot follow an OPU non-controlled publisher chain.', [r.line]));
+          out.push(ctx.issue('error', 'ordering', 'Record SPT cannot follow an OPU non-controlled publisher chain.', [r.line], 'TR'));
         }
       }
       if (isWriterTerr(r) && r.ip && !seenWriterIps.has(r.ip)) {
-        out.push(ctx.issue('error', 'ordering', `Record ${r.type} appears before its writer record.`, [r.line]));
+        out.push(ctx.issue('error', 'ordering', `Record ${r.type} appears before its writer record.`, [r.line], 'TR'));
       }
       if (isPwr(r)) {
         if (r.publisherIp && !seenPublisherIps.has(r.publisherIp)) {
-          out.push(ctx.issue('error', 'ordering', 'Record PWR appears before its linked publisher record.', [r.line]));
+          out.push(ctx.issue('error', 'ordering', 'Record PWR appears before its linked publisher record.', [r.line], 'TR'));
         }
         if (r.writerIp && !seenWriterIps.has(r.writerIp)) {
-          out.push(ctx.issue('error', 'ordering', 'Record PWR appears before its linked writer record.', [r.line]));
+          out.push(ctx.issue('error', 'ordering', 'Record PWR appears before its linked writer record.', [r.line], 'TR'));
         }
       }
 

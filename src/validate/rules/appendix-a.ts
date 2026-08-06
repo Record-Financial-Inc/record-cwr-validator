@@ -25,10 +25,10 @@ export const appendixAPerformanceRule: TxRule = {
 
     const out: CwrIssue[] = [];
     if (writersPr < 0.5 - TOLERANCE) {
-      out.push(ctx.issue('warning', 'overclaim', `Writers hold ${(writersPr * 100).toFixed(1)}% of performance: CISAC Appendix A expects writers to retain at least 50%.`, writers.map((r) => r.line)));
+      out.push(ctx.issue('warning', 'overclaim', `Writers hold ${(writersPr * 100).toFixed(1)}% of performance: CISAC Appendix A expects writers to retain at least 50%.`, writers.map((r) => r.line), 'TR'));
     }
     if (pubsPr > 0.5 + TOLERANCE) {
-      out.push(ctx.issue('warning', 'overclaim', `Publishers hold ${(pubsPr * 100).toFixed(1)}% of performance: CISAC Appendix A caps publisher performance ownership at 50%.`, pubs.map((r) => r.line)));
+      out.push(ctx.issue('warning', 'overclaim', `Publishers hold ${(pubsPr * 100).toFixed(1)}% of performance: CISAC Appendix A caps publisher performance ownership at 50%.`, pubs.map((r) => r.line), 'TR'));
     }
     return out;
   },

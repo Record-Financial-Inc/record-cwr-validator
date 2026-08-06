@@ -35,7 +35,7 @@ export const territoryOverlapRule: TxRule = {
       for (let i = 0; i < list.length; i++) {
         for (let j = i + 1; j < list.length; j++) {
           if (tisOverlaps(list[i].tis, list[j].tis)) {
-            out.push(ctx.issue('warning', 'territory', `Included territories ${list[i].tis} and ${list[j].tis} overlap: the same locations are claimed twice for one party.`, [list[i].line, list[j].line]));
+            out.push(ctx.issue('warning', 'territory', `Included territories ${list[i].tis} and ${list[j].tis} overlap: the same locations are claimed twice for one party.`, [list[i].line, list[j].line], 'TR'));
           }
         }
       }

@@ -19,7 +19,7 @@ export const ipiFormatRule: TxRule = {
       if (!isPublisher(r) && !isWriter(r)) continue;
       // IPI is optional on a record, but if present it must be well-formed.
       if (r.ipi && !IPI_REGEX.test(r.ipi)) {
-        out.push(ctx.issue('error', 'field', `IPI "${r.ipi}" is malformed: an IPI Name Number is 9–11 digits.`, [r.line]));
+        out.push(ctx.issue('error', 'field', `IPI "${r.ipi}" is malformed: an IPI Name Number is 9–11 digits.`, [r.line], 'FR'));
       }
     }
     return out;

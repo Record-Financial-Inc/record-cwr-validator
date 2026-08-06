@@ -56,12 +56,12 @@ export const territoryRecordRule: TxRule = {
         const total = collected(t);
 
         if (t.indicator === 'I' && total <= TOLERANCE) {
-          out.push(ctx.issue('warning', 'territory', `${t.type} for territory ${t.tis} includes the territory but collects nothing. CWR19-1070 ${section} (TR) requires an included territory to collect above zero, while the §5.7 prose on the same page permits an all-zero record "to record a ${kind}'s place in the chain of agreements". The specification contradicts itself; societies implement the validation rule, and files have been rejected for this.`, [t.line]));
+          out.push(ctx.issue('warning', 'territory', `${t.type} for territory ${t.tis} includes the territory but collects nothing. CWR19-1070 ${section} (TR) requires an included territory to collect above zero, while the §5.7 prose on the same page permits an all-zero record "to record a ${kind}'s place in the chain of agreements". The specification contradicts itself; societies implement the validation rule, and files have been rejected for this.`, [t.line], 'TR'));
         }
 
         // An exclusion carves a territory out, so it cannot also claim a share of it.
         if (t.indicator === 'E' && total > TOLERANCE) {
-          out.push(ctx.issue('error', 'territory', `${t.type} for territory ${t.tis} excludes the territory yet collects ${(total * 100).toFixed(2)}% across the rights. An excluded territory must carry zero in every right (CWR19-1070 §5.12 p50 record validation 3).`, [t.line]));
+          out.push(ctx.issue('error', 'territory', `${t.type} for territory ${t.tis} excludes the territory yet collects ${(total * 100).toFixed(2)}% across the rights. An excluded territory must carry zero in every right (CWR19-1070 §5.12 p50 record validation 3).`, [t.line], 'TR'));
         }
       }
     }

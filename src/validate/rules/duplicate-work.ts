@@ -19,7 +19,7 @@ export const duplicateWorkRule: FileRule = {
       if (!isWork(r) || !r.submitterWorkId) continue;
       const prev = firstLine.get(r.submitterWorkId);
       if (prev != null) {
-        out.push(ctx.issue('error', 'duplicate', `Submitter work # "${r.submitterWorkId}" appears in more than one transaction.`, [prev, r.line]));
+        out.push(ctx.issue('error', 'duplicate', `Submitter work # "${r.submitterWorkId}" appears in more than one transaction.`, [prev, r.line], 'TR'));
       } else {
         firstLine.set(r.submitterWorkId, r.line);
       }

@@ -6,13 +6,33 @@
 // for a file/group rule to attach one.
 
 import type { ParsedCwr, CwrRecord } from '../parse/parse-cwr';
-import type { CwrIssue, CwrIssueCategory, CwrSeverity } from './types';
+import type { CwrIssue, CwrIssueCategory, CwrGrade, CwrSeverity } from './types';
+
+/**
+ * Read the specification's grade out of the citation a message carries.
+ *
+ * Messages end with a citation this engine writes in a fixed shape, for example
+ * "(CWR19-1070 §3.5 p14 field validation 3, ER: entire file rejected)". That suffix is a format we
+ * control, not prose we are guessing at, and `group-by-rule.ts` already splits it off to state a
+ * rule once.
+ *
+ * Deriving it here rather than at 127 call sites means a rule that cites its source is graded for
+ * free. A rule whose message carries no citation must pass `grade` explicitly; the guard in
+ * `tests/unit/core/validation/cwr/grade-coverage.test.ts` fails when neither is true.
+ */
+const CITED_GRADE = /,\s*(ER|GR|TR|RR|FR):\s/;
+
+function gradeFromCitation(message: string): CwrGrade | undefined {
+  return (CITED_GRADE.exec(message)?.[1] as CwrGrade | undefined) ?? undefined;
+}
 
 export type IssueFactory = (
   severity: CwrSeverity,
   category: CwrIssueCategory,
   message: string,
   records: number[],
+  /** The specification's grade, when the message carries no citation to read it from. */
+  grade?: CwrGrade,
 ) => CwrIssue;
 
 /**
@@ -70,7 +90,14 @@ export function makeFileContext(parsed: ParsedCwr): FileContext {
     records: parsed.records,
     readable: parsed.records.filter((r) => r.framingOk),
     // File/group issues describe the envelope, not a work: never per-work-excludable (I2).
-    issue: (severity, category, message, records) => ({ severity, category, message, records, txSeq: null }),
+    issue: (severity, category, message, records, grade) => ({
+      severity,
+      category,
+      message,
+      records,
+      txSeq: null,
+      grade: grade ?? gradeFromCitation(message),
+    }),
   };
 }
 
@@ -82,6 +109,14 @@ export function makeTxContext(txSeq: number, workTitle: string | undefined, reco
     readable: records.filter((r) => r.framingOk),
     // Transaction issues auto-carry txSeq + workTitle so the export gate worklists exactly the
     // offending work: a rule author cannot forget to stamp it (I2).
-    issue: (severity, category, message, recs) => ({ severity, category, message, records: recs, txSeq, workTitle }),
+    issue: (severity, category, message, recs, grade) => ({
+      severity,
+      category,
+      message,
+      records: recs,
+      txSeq,
+      workTitle,
+      grade: grade ?? gradeFromCitation(message),
+    }),
   };
 }

@@ -41,9 +41,9 @@ export const countsRule: FileRule = {
       const groupCount = numAt(trl.raw, 3, 8);
       const trlTx = numAt(trl.raw, 8, 16);
       const trlRec = numAt(trl.raw, 16, 24);
-      if (trlRec !== null && trlRec !== recs.length) out.push(ctx.issue('error', 'count', `TRL record count ${trlRec} does not match the actual ${recs.length} records in the file.`, [trl.line]));
-      if (trlTx !== null && trlTx !== txCount) out.push(ctx.issue('error', 'count', `TRL transaction count ${trlTx} does not match the actual ${txCount} transactions.`, [trl.line]));
-      if (groupCount !== null && groupCount !== grhCount) out.push(ctx.issue('error', 'count', `TRL group count ${groupCount} does not match the actual ${grhCount} group(s).`, [trl.line]));
+      if (trlRec !== null && trlRec !== recs.length) out.push(ctx.issue('error', 'count', `TRL record count ${trlRec} does not match the actual ${recs.length} records in the file.`, [trl.line], 'GR'));
+      if (trlTx !== null && trlTx !== txCount) out.push(ctx.issue('error', 'count', `TRL transaction count ${trlTx} does not match the actual ${txCount} transactions.`, [trl.line], 'GR'));
+      if (groupCount !== null && groupCount !== grhCount) out.push(ctx.issue('error', 'count', `TRL group count ${groupCount} does not match the actual ${grhCount} group(s).`, [trl.line], 'GR'));
     }
 
     // GRT counts the records within its group (GRH … GRT inclusive). Only check the single-group
@@ -54,8 +54,8 @@ export const countsRule: FileRule = {
       const groupRecords = grtIdx - grhIdx + 1;
       const grtTx = numAt(grt.raw, 8, 16);
       const grtRec = numAt(grt.raw, 16, 24);
-      if (grtRec !== null && grtRec !== groupRecords) out.push(ctx.issue('error', 'count', `GRT record count ${grtRec} does not match the actual ${groupRecords} records in the group.`, [grt.line]));
-      if (grtTx !== null && grtTx !== txCount) out.push(ctx.issue('error', 'count', `GRT transaction count ${grtTx} does not match the actual ${txCount} transactions.`, [grt.line]));
+      if (grtRec !== null && grtRec !== groupRecords) out.push(ctx.issue('error', 'count', `GRT record count ${grtRec} does not match the actual ${groupRecords} records in the group.`, [grt.line], 'GR'));
+      if (grtTx !== null && grtTx !== txCount) out.push(ctx.issue('error', 'count', `GRT transaction count ${grtTx} does not match the actual ${txCount} transactions.`, [grt.line], 'GR'));
     }
 
     return out;

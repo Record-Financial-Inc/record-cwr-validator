@@ -33,7 +33,7 @@ export const checkDigitRule: TxRule = {
         const validate = VALIDATORS[ef.spec.datatype];
         if (!validate || !ef.value) continue;
         if (validate(ef.value) === false) {
-          out.push(ctx.issue('warning', 'field', `${ef.spec.name} "${ef.value}" has an invalid check digit.`, [r.line]));
+          out.push(ctx.issue('warning', 'field', `${ef.spec.name} "${ef.value}" has an invalid check digit.`, [r.line], 'FR'));
         }
       }
     }

@@ -30,7 +30,7 @@ export const mandatoryFieldRule: TxRule = {
         if (ef.spec.presence !== 'M') continue;
         if (NOT_DATA.has(ef.spec.datatype) || COVERED_BY_P1.has(ef.spec.key)) continue;
         if (ef.value === '') {
-          out.push(ctx.issue('error', 'mandatory', `${ef.spec.name} (${rec.head}) is required but missing.`, [r.line]));
+          out.push(ctx.issue('error', 'mandatory', `${ef.spec.name} (${rec.head}) is required but missing.`, [r.line], 'TR'));
         }
       }
     }

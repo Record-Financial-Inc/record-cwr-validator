@@ -48,16 +48,19 @@ export const envelopeFieldRule: FileRule = {
           // that IS there; MANDATORY_FIELD does presence but is a TxRule and never reaches the
           // envelope. The gap was not a missing check so much as nobody owning it.
           if (ef.spec.presence === 'M' && !NOT_DATA.has(ef.spec.datatype) && !REPORTED_ELSEWHERE.has(ef.spec.key)) {
-            out.push(ctx.issue('error', 'mandatory', `${ef.spec.name} (${rec.head}) is required but missing.`, [r.line]));
+            // The HDR identifies the sender, and §3.5 grades its field validations ER: the society
+            // refuses the file before it reads a work. A group header or trailer takes its group down.
+            out.push(ctx.issue('error', 'mandatory', `${ef.spec.name} (${rec.head}) is required but missing.`, [r.line], rec.head === 'HDR' ? 'ER' : 'GR'));
           }
           continue;
         }
         if (FORMAT_DATATYPES.has(ef.spec.datatype)) {
           const reason = checkDatatype(ef.spec.datatype, ef.value);
-          if (reason) out.push(ctx.issue('error', 'field', `${ef.spec.name} (${rec.head}) "${ef.value}" ${reason}.`, [r.line]));
+          if (reason) out.push(ctx.issue('error', 'field', `${ef.spec.name} (${rec.head}) "${ef.value}" ${reason}.`, [r.line], rec.head === 'HDR' ? 'ER' : 'GR'));
         }
         if (ef.spec.source && isValidCode(ef.spec.source, ef.value) === false) {
-          out.push(ctx.issue('warning', 'field', `${ef.spec.name} (${rec.head}) "${ef.value}" is not a recognised CWR code.`, [r.line]));
+          // An unrecognised code is a field defect, and the table is 2.1-era, so this stays FR.
+          out.push(ctx.issue('warning', 'field', `${ef.spec.name} (${rec.head}) "${ef.value}" is not a recognised CWR code.`, [r.line], 'FR'));
         }
       }
     }

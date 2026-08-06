@@ -29,7 +29,7 @@ export const workHeaderRequiredRule: FileRule = {
     const out: CwrIssue[] = [];
     for (const r of ctx.records) {
       if (r.txSeq == null && CHILD_RECORDS.has(r.type)) {
-        out.push(ctx.issue('error', 'structure', `${r.type} record appears with no preceding NWR/REV work header.`, [r.line]));
+        out.push(ctx.issue('error', 'structure', `${r.type} record appears with no preceding NWR/REV work header.`, [r.line], 'TR'));
       }
     }
     return out;
@@ -46,7 +46,7 @@ export const workWriterRequiredRule: TxRule = {
     if (!ctx.records.some(isWork)) return []; // not a work transaction: workHeader rule owns that
     if (ctx.records.some(isWriter)) return [];
     const work = ctx.records.find(isWork)!;
-    return [ctx.issue('error', 'structure', 'Work has no writer (SWR/OWR): at least one is required.', [work.line])];
+    return [ctx.issue('error', 'structure', 'Work has no writer (SWR/OWR): at least one is required.', [work.line], 'TR')];
   },
 };
 
@@ -64,7 +64,7 @@ export const publisherTerritoryRequiredRule: TxRule = {
     for (const p of ctx.records.filter(isPublisher)) {
       if (p.type !== 'SPU' || !p.ip) continue; // OPU collects nothing; a blank IP is a mandatory-field issue
       if (!sptIps.has(p.ip)) {
-        out.push(ctx.issue('error', 'structure', `Controlled publisher "${p.name || p.ip}" has no SPT territory-of-control record.`, [p.line]));
+        out.push(ctx.issue('error', 'structure', `Controlled publisher "${p.name || p.ip}" has no SPT territory-of-control record.`, [p.line], 'TR'));
       }
     }
     return out;
@@ -84,7 +84,7 @@ export const writerTerritoryRequiredRule: TxRule = {
     for (const w of ctx.records.filter(isWriter)) {
       if (w.type !== 'SWR' || !w.ip) continue; // OWR collects nothing; a blank IP is a mandatory-field issue
       if (!swtIps.has(w.ip)) {
-        out.push(ctx.issue('error', 'structure', `Controlled writer "${w.lastName || w.ip}" has no SWT territory-of-control record.`, [w.line]));
+        out.push(ctx.issue('error', 'structure', `Controlled writer "${w.lastName || w.ip}" has no SWT territory-of-control record.`, [w.line], 'TR'));
       }
     }
     return out;
